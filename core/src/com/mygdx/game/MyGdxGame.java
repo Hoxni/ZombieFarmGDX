@@ -2,12 +2,12 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
@@ -16,6 +16,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.parser.ConfigurationParser;
 import com.mygdx.game.parser.TileHolder;
@@ -27,17 +35,17 @@ import java.util.List;
 import java.util.Random;
 
 
-public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
+public class MyGdxGame extends ApplicationAdapter{
     protected TiledMap map;
     protected TiledMapRenderer renderer;
     protected GamingZone gamingZone;
     protected SpriteBatch batch;
+    protected Label outputLabel;
 
     protected List<TreeTexture> trees;
     protected List<BuildingTexture> buildings;
     protected List<Obstruction> obstructions;
 
-    protected Vector2D target = Settings.INITIAL_POINT.copy();
     protected List<Zombie> zombies;
     protected Zombie zombie;
 
@@ -47,7 +55,6 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
     protected OrthographicCamera camera;
     protected OrthoCamController cameraController;
     protected Vector3 cameraPosition;
-    protected boolean isCameraDragged = false;
 
 
     @Override
@@ -64,6 +71,14 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         createMobZombies();
         createZombiesUpdater();
 
+        Drawable d = new TextureRegionDrawable(new TextureRegion(new Texture(Paths.HAT_STAND)));
+        d.setBottomHeight(200);
+        d.setRightWidth(200);
+        ImageButton b = new ImageButton(d);
+        b.setPosition(0, 0);
+        b.setSize(500, 500);
+        b.setLayoutEnabled(true);
+        cameraController.addActor(b);
 
 
     }
@@ -79,9 +94,6 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         camera = new OrthographicCamera();
         camera.setToOrtho(true, Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT);
         camera.update();
-
-        cameraController = new OrthoCamController(camera, mapHeight, mapWidth);
-        Gdx.input.setInputProcessor(this);
 
         batch = new SpriteBatch();
 
@@ -216,7 +228,10 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         zombieActor.setHat(hats.get(1));
         zombieActor.setPosition(Settings.INITIAL_POINT.x, Settings.INITIAL_POINT.y);
         zombie = new Zombie(Settings.INITIAL_POINT.copy(), zombieActor, whiteWave, obstructions);
-        ((CustomOrthogonalTiledMapRenderer) renderer).addSprite(zombie);
+
+        ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
+        cameraController = new OrthoCamController(camera, 2700, 3400, zombie, trees, gamingZone);
+        Gdx.input.setInputProcessor(cameraController);
     }
 
     public void createMobZombies(){
@@ -226,10 +241,9 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
             ZombieActor zombieActor = new ZombieActor();
             zombieActor.setPosition(Settings.INITIAL_POINT.x, Settings.INITIAL_POINT.y);
             Zombie zombie = new Zombie(Settings.INITIAL_POINT.copy(), zombieActor, whiteWave, obstructions);
-            ((CustomOrthogonalTiledMapRenderer) renderer).addSprite(zombie);
             zombies.add(zombie);
+            ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
         }
-
 
         Random random = new Random();
         Timer timer = new Timer();
@@ -317,84 +331,19 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if(!Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && isCameraDragged){
-            Gdx.input.setInputProcessor(this);
-            isCameraDragged = false;
-        }
-
-        camera.update();
         renderer.setView(camera);
         renderer.render();
         batch.setProjectionMatrix(camera.combined);
         cameraController.act(Gdx.graphics.getDeltaTime());
         cameraController.draw();
+        camera.update();
+
     }
 
     @Override
     public void dispose(){
         batch.dispose();
-    }
-
-    @Override
-    public boolean keyDown(int keycode){
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode){
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character){
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button){
-        if(button == Input.Buttons.RIGHT){
-            cameraPosition.set(screenX, screenY, 0);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button){
-        Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
-        Vector3 position = camera.unproject(clickCoordinates);
-        Vector2D point = new Vector2D(position.x, position.y);
-        gamingZone.checkGamingZone(zombie.getLocation(), point);
-        if(button == Input.Buttons.RIGHT){
-            target.set(point.x, point.y);
-            zombie.follow(target);
-        }
-        if(button == Input.Buttons.LEFT){
-            for(TreeTexture tree : trees){
-                if(tree.contains(point.x, point.y)){
-                    zombie.setTreeTarget(tree);
-                    target.set(tree.getCutPosition().x, tree.getCutPosition().y);
-                    zombie.follow(target);
-                    break;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer){
-        isCameraDragged = true;
-        Gdx.input.setInputProcessor(cameraController);
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY){
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount){
-        return false;
+        map.dispose();
+        cameraController.dispose();
     }
 }

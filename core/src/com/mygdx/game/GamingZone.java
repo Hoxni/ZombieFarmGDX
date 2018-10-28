@@ -10,10 +10,16 @@ public class GamingZone{
     }
 
     public void checkGamingZone(Vector2D location, Vector2D target){
-        List<Vector2D> list = Obstruction.getIntersectionPoints(location, target, cornerPoints);
-        if(!list.isEmpty()){
-            Vector2D v = list.get(0);
-            target.set(v.x, v.y);
+        //set intersection point as target if target-point is not in the gaming zone
+        //intersection point finds as in Building class
+        if(!Obstruction.isPointInPolygon(target, cornerPoints)){
+            List<Vector2D> list = Obstruction.getIntersectionPoints(location, target, cornerPoints);
+            if(!list.isEmpty()){
+                Vector2D v = list.get(0);
+                target.set(v.x, v.y);
+            } else {
+                target.set(location.x, location.y);
+            }
         }
     }
 }

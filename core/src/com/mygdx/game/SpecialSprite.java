@@ -81,28 +81,10 @@ public abstract class SpecialSprite{
 
     }
 
-    Vector2D getNormalPoint(Vector2D p, Vector2D a, Vector2D b) {
-        Vector2D ap = Vector2D.subtract(p, a);
-        Vector2D ab = Vector2D.subtract(b, a);
-
-        ab.normalize();
-        ab.multiply(ap.dot(ab));
-        Vector2D normalPoint = Vector2D.add(a, ab);
-
-        return normalPoint;
-    }
-
     /**
      * Update node position
      */
     abstract void display();
-
-     /*   actor.setPosition((float)(location.x - centerX), (float)(location.y - centerY));
-        //setRotate(Math.toDegrees( angle));*/
-
-    public Vector2D getVelocity() {
-        return velocity;
-    }
 
     public Vector2D getLocation() {
         return location;
@@ -111,11 +93,6 @@ public abstract class SpecialSprite{
     public void setLocation( float x, float y) {
         location.x = x;
         location.y = y;
-    }
-
-    public void setLocationOffset( float x, float y) {
-        location.x += x;
-        location.y += y;
     }
 
     public void update(Vector2D v){

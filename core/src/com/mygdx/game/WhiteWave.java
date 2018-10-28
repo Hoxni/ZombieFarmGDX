@@ -24,7 +24,7 @@ public class WhiteWave extends TextureMapObject{
                     stage = 0;
                 }
             }
-        }, 0, Settings.WHITE_WAVE_DURIATION);
+        }, 0, Settings.WHITE_WAVE_DURATION);
         timer.start();
         setVisible(false);
     }

@@ -19,9 +19,9 @@ public class Zombie extends SpecialSprite{
     protected boolean goDown = true; //"true" when zombie goes from top to bottom of frame
     protected final List<Vector2D> points;
     protected final List<Obstruction> obstructions;
-    protected final Deque<AbstractMap.SimpleEntry<Float, Float>> layers; //layers of obstructions
+    protected final Deque<AbstractMap.SimpleEntry<Float, Integer>> layers; //layers of obstructions
     protected int pointIndex = 0; //index of current target point
-    protected float layerIndex = 0; //index of current layerIndex
+    protected int layerIndex = 0; //index of current layerIndex
     protected MapLayer layer;
     protected MapObject mapObject;
 
@@ -36,8 +36,9 @@ public class Zombie extends SpecialSprite{
         this.obstructions = (ArrayList<Obstruction>) obstructions;
         layers = new ArrayDeque<>();
         mapObject = new MapObject();
-        mapObject.getProperties().put("actor", actor);
+        mapObject.getProperties().put("actor", zombieActor);
         layer = new MapLayer();
+        setLayerIndex();
         setCenter();
     }
 
@@ -53,7 +54,8 @@ public class Zombie extends SpecialSprite{
         }
 
         if(Vector2D.subtract(location, currentTargetPoint).magnitude() < Settings.STOP_DISTANCE){
-            if(target.equals(currentTargetPoint)){
+            //stop zombie if he already on target point to predict stupid bugs with moving
+            if(Vector2D.subtract(location, target).magnitude() < Settings.STOP_DISTANCE){
                 points.clear();
             }
             stop();
@@ -80,13 +82,13 @@ public class Zombie extends SpecialSprite{
 
         if(!layers.isEmpty()){
             if(goDown){
-                if(location.y >= layers.getFirst().getValue()){
-                    layerIndex = layers.getFirst().getKey() + 1;
+                if(location.y >= layers.getFirst().getKey()){
+                    layerIndex = layers.getFirst().getValue() + 1;
                     layers.pop();
                 }
             } else {
-                if(location.y <= layers.getFirst().getValue()){
-                    layerIndex = layers.getFirst().getKey();
+                if(location.y <= layers.getFirst().getKey()){
+                    layerIndex = layers.getFirst().getValue();
                     layers.pop();
                 }
             }
@@ -129,6 +131,10 @@ public class Zombie extends SpecialSprite{
         return zombieActor.getAnimationMode();
     }
 
+    public int getLayerIndex(){
+        return layerIndex;
+    }
+
     /**
      * zombie goes to the initial point with a timber
      * when he cut down a tree
@@ -149,7 +155,7 @@ public class Zombie extends SpecialSprite{
         points.clear();
         layers.clear();
         List<List<Vector2D>> paths = new ArrayList<>();
-        List<AbstractMap.SimpleEntry<Float, Float>> layersList = new ArrayList<>();
+        List<AbstractMap.SimpleEntry<Float, Integer>> layersList = new ArrayList<>();
 
         if(location.y < target.y){
             goDown = true;
@@ -164,10 +170,24 @@ public class Zombie extends SpecialSprite{
             if(Math.abs(obstruction.getCenter().y - location.y) +
                     Math.abs(obstruction.getCenter().y - target.y) <=
                     Math.abs(location.y - target.y)){
-                layersList.add(new AbstractMap.SimpleEntry<>(obstruction.getLayer(), obstruction.getCenter().y));
+                layersList.add(new AbstractMap.SimpleEntry<>(obstruction.getCenter().y, obstruction.getLayer()));
             }
 
             List<Vector2D> intersectionPoints = Obstruction.getIntersectionPoints(location, target, obstruction.getCornerPoints());
+            //if zombie tries to move inside some obstruction
+            if(obstruction instanceof ImpassableTerrain){
+                if(Obstruction.isPointInPolygon(target, obstruction.getCornerPoints())){
+                    if(!intersectionPoints.isEmpty()){
+                        target.set(intersectionPoints.get(0).x, intersectionPoints.get(0).y);
+                    } else {
+                        target.set(location.x, location.y);
+                    }
+                    points.clear();
+                    points.add(target);
+                    break;
+                }
+            }
+            //find bypass
             if(!intersectionPoints.isEmpty()){
                 paths.add(obstruction.getBypass(location, target, intersectionPoints));
             }
@@ -177,7 +197,7 @@ public class Zombie extends SpecialSprite{
         //collection sorts by first bypass point
         paths.sort(Comparator.comparingDouble(c -> Vector2D.subtract(location, c.get(0)).magnitude()));
 
-        layersList.sort(Comparator.comparingDouble(c -> Math.abs(location.y - c.getValue())));
+        layersList.sort(Comparator.comparingDouble(c -> Math.abs(location.y - c.getKey())));
         layers.addAll(layersList);
 
         //add points
@@ -204,7 +224,16 @@ public class Zombie extends SpecialSprite{
         layer.getObjects().add(mapObject);
     }
 
-    public void removeLayer(){
+    private void setLayerIndex(){
+        Obstruction obstruction = Collections.min(obstructions, Comparator.comparingDouble(c->location.y - c.getCenter().y));
+        if(obstruction.getCenter().y <= location.y){
+            layerIndex = obstruction.getLayer() + 1;
+        } else {
+            layerIndex = obstruction.getLayer();
+        }
+    }
+
+    private void removeLayer(){
         layer.getObjects().remove(mapObject);
     }
 

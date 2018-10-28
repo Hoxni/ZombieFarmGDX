@@ -15,7 +15,8 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
     protected final List<Vector2D> cornerPoints;
     protected final TreeTexture thisTree;
     protected final float WIDTH, HEIGHT;
-    protected float layer = 0;
+    protected int layer = 0;
+    protected Vector2D center;
 
     public TreeTexture(
             String palm,
@@ -39,7 +40,7 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
         textureTree.getTextureData().prepare();
         Pixmap pixmapTree = textureTree.getTextureData().consumePixmap();
         Pixmap pixmap = new Pixmap(textureTree.getWidth(), textureTree.getHeight(), Pixmap.Format.RGBA8888);
-        pixmap.drawPixmap(pixmapShadow, 0, 0);
+        pixmap.drawPixmap(pixmapShadow, 0, (int) (HEIGHT - shadowView.getHeight()));
         pixmap.drawPixmap(pixmapTree, 0, 0);
         Texture texture = new Texture(pixmap);
         pixmapShadow.dispose();
@@ -61,7 +62,8 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
         cornerPoints.add(new Vector2D(getPosX() - OFFSET * 3, getPosY()));
         cornerPoints.add(new Vector2D(getPosX(), getPosY() + OFFSET));
         cornerPoints.add(new Vector2D(getPosX() + OFFSET * 3, getPosY()));
-        cornerPoints.add(new Vector2D(getPosX() + OFFSET, getPosY() - OFFSET));
+        cornerPoints.add(new Vector2D(getPosX() + OFFSET, getPosY() - OFFSET * 3));
+        center = new Vector2D(getPosX(), getPosY());
     }
 
     public void chopDown(Zombie zombie){
@@ -70,7 +72,7 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
         }
 
         Timer cutProcess = new Timer();
-        Timer.Task task = cutProcess.scheduleTask(new Timer.Task(){
+        cutProcess.scheduleTask(new Timer.Task(){
             @Override
             public void run(){
                 //if zombie stood near tree all necessary time, tree replaced by stump
@@ -90,11 +92,11 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
     }
 
     public float getPosX(){
-        return this.getX() + WIDTH / 2;
+        return getX() + WIDTH / 2;
     }
 
     public float getPosY(){
-        return this.getY() + HEIGHT - OFFSET;
+        return getY() + HEIGHT - OFFSET;
     }
 
     public Vector2D getCutPosition(){
@@ -128,7 +130,7 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
 
         //find edges which have intersection with path-line
         //this code duplicates "getIntersectionPoints" and can be optimized as described above
-        List<AbstractMap.SimpleEntry<Integer, Vector2D>> intersectedEdges = new ArrayList<>();
+        List<Map.Entry<Integer, Vector2D>> intersectedEdges = new ArrayList<>();
         for(int i = 0; i < cornerPoints.size(); i++){
             int next = (i + 1 == cornerPoints.size()) ? 0 : i + 1;
 
@@ -201,16 +203,16 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
 
     @Override
     public Vector2D getCenter(){
-        return new Vector2D(getPosX(), getPosY());
+        return center;
     }
 
     @Override
-    public void setLayer(float layer){
+    public void setLayer(int layer){
         this.layer = layer;
     }
 
     @Override
-    public float getLayer(){
+    public int getLayer(){
         return layer;
     }
 }

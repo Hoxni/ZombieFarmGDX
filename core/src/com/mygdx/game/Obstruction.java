@@ -50,7 +50,7 @@ public interface Obstruction{
         //Set is used to predict adding equal points
         Set<Vector2D> intersectionPoints = new TreeSet<>((o1, o2) -> {
             //check if points are equal
-            if(Math.abs(o1.x - o2.x) <= EQUITY_TOLERANCE && Math.abs(o1.y - o2.y) <= EQUITY_TOLERANCE)
+            if(o1.equals(o2))
                 return 0;
             else return 1;
         });
@@ -90,8 +90,7 @@ public interface Obstruction{
         for(int i = 0, j = polygon.size() - 1; i < polygon.size(); j = (i++)){
             if((polygon.get(i).y > p.y) != (polygon.get(j).y > p.y) &&
                     p.x < (polygon.get(j).x - polygon.get(i).x) * (p.y - polygon.get(i).y) / (polygon.get(j).y - polygon.get(i).y) + polygon.get(i).x){
-                inside = true;
-                break;
+                inside = !inside;
             }
         }
         return inside;
@@ -103,9 +102,9 @@ public interface Obstruction{
 
     Vector2D getCenter();
 
-    void setLayer(float layer);
+    void setLayer(int layer);
 
-    float getLayer();
+    int getLayer();
 
     //-------------------- Normal code above ---------------------------------------------------------
 

@@ -7,7 +7,7 @@ import java.util.*;
 public class BuildingTexture extends TextureMapObject implements Obstruction{
     protected final float OFFSET = 5;
     protected final ArrayList<Vector2D> cornerPoints;
-    protected float layer = 0;
+    protected int layer = 0;
 
     public BuildingTexture(String building, String buildingXML, float x, float y){
         SpecialAnimation animation = new SpecialAnimation(building, buildingXML);
@@ -143,12 +143,12 @@ public class BuildingTexture extends TextureMapObject implements Obstruction{
     }
 
     @Override
-    public void setLayer(float layer){
+    public void setLayer(int layer){
         this.layer = layer;
     }
 
     @Override
-    public float getLayer(){
+    public int getLayer(){
         return layer;
     }
 

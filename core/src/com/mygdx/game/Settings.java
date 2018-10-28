@@ -12,7 +12,7 @@ public class Settings{
 
     public static final float HEIGHT_OFFSET = 7f;
 
-    public static final float WHITE_WAVE_DURIATION = 0.13f;
+    public static final float WHITE_WAVE_DURATION = 0.13f;
 
     public static final float ZOMBIE_ANIMATION_SPEED = 0.03f;
     public static final float CUT_DOWN_DURATION = 0.54f;
@@ -23,9 +23,9 @@ public class Settings{
 
     public static final float ZOMBIE_MOVING_DELAY = 3f;
 
-    public static final int TREES_NUMBER = 0;
-    public static final int BUILDINGS_NUMBER = 1;
-    public static final int ZOMBIES_NUMBER = 0;
+    public static final int TREES_NUMBER = 3;
+    public static final int BUILDINGS_NUMBER = 3;
+    public static final int ZOMBIES_NUMBER = 3;
 
     public static final float WINDOW_WIDTH = 900;
     public static final float WINDOW_HEIGHT = 700;

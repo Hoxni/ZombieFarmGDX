@@ -2,16 +2,10 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.move.DraggedListener;
-import com.mygdx.game.move.TouchListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrthoCamController extends Stage {
@@ -20,16 +14,17 @@ public class OrthoCamController extends Stage {
     private final Vector3 last = new Vector3(-1, -1, -1);
     private int mapHeight;
     private int mapWidth;
+    private Zombie zombie;
+    private List<TreeTexture> trees;
+    private GamingZone gamingZone;
 
-    private List<DraggedListener> listeners;
-    private List<TouchListener> touchListeners;
-
-    public OrthoCamController (OrthographicCamera camera, int mapHeight,int mapWidth) {
+    public OrthoCamController (OrthographicCamera camera, int mapHeight, int mapWidth, Zombie zombie, List<TreeTexture> trees, GamingZone gamingZone) {
         this.camera = camera;
         this.mapHeight = mapHeight;
         this.mapWidth = mapWidth;
-        listeners = new ArrayList<>();
-        touchListeners = new ArrayList<>();
+        this.zombie = zombie;
+        this.trees = trees;
+        this.gamingZone = gamingZone;
     }
 
     @Override
@@ -37,7 +32,7 @@ public class OrthoCamController extends Stage {
         Vector3 delta = new Vector3();
         camera.unproject(curr.set(x, y, 0));
 
-        if (!(last.x == -1 && last.y == -1 && last.z == -1) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        if (!(last.x == -1 && last.y == -1 && last.z == -1) && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             camera.unproject(delta.set(last.x, last.y, 0));
             delta.sub(curr);
 
@@ -55,10 +50,6 @@ public class OrthoCamController extends Stage {
             }
 
             camera.position.add(delta.x, delta.y, 0);
-            for(DraggedListener listener : listeners){
-
-                listener.onDrag(delta.x,delta.y);
-            }
         }
 
         last.set(x, y, 0);
@@ -66,31 +57,25 @@ public class OrthoCamController extends Stage {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        for(TouchListener listener : touchListeners){
-            listener.onTouch(screenX,screenY);
+    public boolean touchUp (int x, int y, int pointer, int button) {
+        last.set(-1, -1, -1);
+        Vector3 clickCoordinates = new Vector3(x, y, 0);
+        Vector3 position = camera.unproject(clickCoordinates);
+        Vector2D point = new Vector2D(position.x, position.y);
+        gamingZone.checkGamingZone(zombie.getLocation(), point);
+        if(button == Input.Buttons.RIGHT){
+            zombie.follow(point);
+        }
+        if(button == Input.Buttons.LEFT){
+            for(TreeTexture tree : trees){
+                if(tree.contains(point.x, point.y)){
+                    zombie.setTreeTarget(tree);
+                    point.set(tree.getCutPosition().x, tree.getCutPosition().y);
+                    zombie.follow(point);
+                    break;
+                }
+            }
         }
         return false;
     }
-
-
-    @Override
-    public boolean touchUp (int x, int y, int pointer, int button) {
-        last.set(-1, -1, -1);
-        return false;
-    }
-
-    public void addDraggedListener(DraggedListener listener){
-        listeners.add(listener);
-
-    }
-
-    public void addTouchListener(TouchListener listener){
-        touchListeners.add(listener);
-
-    }
-
-
-
-
 }

@@ -100,12 +100,12 @@ public class ImpassableTerrain implements Obstruction{
     }
 
     @Override
-    public void setLayer(float layer){
+    public void setLayer(int layer){
 
     }
 
     @Override
-    public float getLayer(){
+    public int getLayer(){
         return 0;
     }
 }
