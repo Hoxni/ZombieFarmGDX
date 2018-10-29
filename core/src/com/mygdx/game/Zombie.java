@@ -80,6 +80,7 @@ public class Zombie extends SpecialSprite{
             }
         }
 
+        //change zombie-layer depending on which obstruction is nearest
         if(!layers.isEmpty()){
             if(goDown){
                 if(location.y >= layers.getFirst().getKey()){
@@ -157,6 +158,7 @@ public class Zombie extends SpecialSprite{
         List<List<Vector2D>> paths = new ArrayList<>();
         List<AbstractMap.SimpleEntry<Float, Integer>> layersList = new ArrayList<>();
 
+        //true is zombie moves from top to bottom
         if(location.y < target.y){
             goDown = true;
         } else {
@@ -170,12 +172,14 @@ public class Zombie extends SpecialSprite{
             if(Math.abs(obstruction.getCenter().y - location.y) +
                     Math.abs(obstruction.getCenter().y - target.y) <=
                     Math.abs(location.y - target.y)){
+                //add location.y of and layer of obstruction in special list (read below about sorting of this list)
                 layersList.add(new AbstractMap.SimpleEntry<>(obstruction.getCenter().y, obstruction.getLayer()));
             }
 
             List<Vector2D> intersectionPoints = Obstruction.getIntersectionPoints(location, target, obstruction.getCornerPoints());
-            //if zombie tries to move inside some obstruction
+            //if zombie tries to move inside impassable terrain
             if(obstruction instanceof ImpassableTerrain){
+                //all of this used only to predict stupid bugs
                 if(Obstruction.isPointInPolygon(target, obstruction.getCornerPoints())){
                     if(!intersectionPoints.isEmpty()){
                         target.set(intersectionPoints.get(0).x, intersectionPoints.get(0).y);
@@ -197,6 +201,9 @@ public class Zombie extends SpecialSprite{
         //collection sorts by first bypass point
         paths.sort(Comparator.comparingDouble(c -> Vector2D.subtract(location, c.get(0)).len2()));
 
+        //sort special list from farthest to closest location.y of obstruction to zombie.location.y
+        //zombie alternately passes all of obstructions in special list
+        //and change his layer respectively
         layersList.sort(Comparator.comparingDouble(c -> Math.abs(location.y - c.getKey())));
         layers.addAll(layersList);
 
@@ -218,25 +225,40 @@ public class Zombie extends SpecialSprite{
         return zombieActor;
     }
 
+    /**
+     * set zombie on the new layer
+     */
     public void setLayer(MapLayer layer){
         removeLayer();
         this.layer = layer;
         layer.getObjects().add(mapObject);
     }
 
+    /**
+     * set initial layer when zombie created
+     */
     private void setLayerIndex(){
+        //find closest obstruction
         Obstruction obstruction = Collections.min(obstructions, Comparator.comparingDouble(c->location.y - c.getCenter().y));
+        //if obstruction is located higher than zombie
         if(obstruction.getCenter().y <= location.y){
             layerIndex = obstruction.getLayer() + 1;
         } else {
+            //if lower
             layerIndex = obstruction.getLayer();
         }
     }
 
+    /**
+     * remove zombie from the old layer
+     */
     private void removeLayer(){
         layer.getObjects().remove(mapObject);
     }
 
+    /**
+     * used to correct displaying if zombie moving
+     */
     @Override
     void setCenter(){
         this.centerX = zombieActor.getWidth() / 2;

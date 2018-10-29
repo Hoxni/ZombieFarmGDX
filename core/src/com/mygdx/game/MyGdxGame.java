@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -15,14 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.parser.ConfigurationParser;
 import com.mygdx.game.parser.TileHolder;
@@ -39,7 +31,6 @@ public class MyGdxGame extends ApplicationAdapter{
     protected TiledMapRenderer renderer;
     protected GamingZone gamingZone;
     protected SpriteBatch batch;
-    protected Label outputLabel;
 
     protected List<TreeTexture> trees;
     protected List<BuildingTexture> buildings;
@@ -70,22 +61,11 @@ public class MyGdxGame extends ApplicationAdapter{
         createMobZombies();
         createZombiesUpdater();
 
-        /*Drawable d = new TextureRegionDrawable(new TextureRegion(new Texture(Paths.HAT_STAND)));
-        d.setBottomHeight(200);
-        d.setRightWidth(200);
-        ImageButton b = new ImageButton(d);
-        b.setPosition(0, 0);
-        b.setSize(500, 500);
-        b.setLayoutEnabled(true);
-        b.addCaptureListener(event -> {
-            if(event.isCapture())
-            System.out.println("QWE");
-            return false;
-        });
-        cameraController.addActor(b);*/
-        
     }
 
+    /**
+     * create map, renderer, batch and camera
+     */
     public void createMap(){
         TileMapHolder tileMapHolder = ConfigurationParser.readConfigurationFromXml(Paths.MAIN_ISLAND_XML);
 
@@ -217,6 +197,10 @@ public class MyGdxGame extends ApplicationAdapter{
                 Paths.DOUBLE_HAT_WOODCUT_XML));
     }
 
+    /**
+     * create main-zombie, whiteWave for him
+     * and cameraController (description inside)
+     */
     public void createMainZombie(){
         MapLayer whiteWaveLayer = new MapLayer();
         WhiteWave whiteWave = new WhiteWave();
@@ -233,6 +217,9 @@ public class MyGdxGame extends ApplicationAdapter{
         zombie = new Zombie(Settings.INITIAL_POINT.copy(), zombieActor, whiteWave, obstructions);
 
         ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
+
+        //cameraController allow to drag-and-drop map
+        //and set targets for main-zombie on map with mouse
         cameraController = new OrthoCamController(camera, 2700, 3400, zombie, trees, gamingZone);
         Gdx.input.setInputProcessor(cameraController);
     }
@@ -248,6 +235,7 @@ public class MyGdxGame extends ApplicationAdapter{
             ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
         }
 
+        //change target for mobs every (Setting.ZOMBIE_MOVING_DELAY) seconds
         Random random = new Random();
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task(){
@@ -271,6 +259,9 @@ public class MyGdxGame extends ApplicationAdapter{
         timer.start();
     }
 
+    /**
+     * update displaying of all zombies
+     */
     public void createZombiesUpdater(){
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task(){
@@ -285,13 +276,23 @@ public class MyGdxGame extends ApplicationAdapter{
         timer.start();
     }
 
+    /**
+     * set impassable terrain
+     * set layers for all obstructions depending on the location
+     * ascending from top to bottom (first layerIndex = 1, last = number of obstructions - 1)
+     * zero layer used to display zombie behind the topmost building
+     */
     public void setObstructions(){
         obstructions = new ArrayList<>();
         obstructions.addAll(trees);
         obstructions.addAll(buildings);
+        //sort obstruction ascending location.y from top to bottom
         obstructions.sort(Comparator.comparingDouble(o -> o.getCenter().y));
+
         //add zero level layer
         map.getLayers().add(new MapLayer());
+
+        //set layers and add objects on the map
         for(int i = 0; i < obstructions.size(); i++){
             MapLayer mapLayer = new MapLayer();
             Obstruction obstruction = obstructions.get(i);
@@ -300,6 +301,7 @@ public class MyGdxGame extends ApplicationAdapter{
             map.getLayers().add(mapLayer);
         }
 
+        //set impassable terrain
         List<Vector2D> points = new ArrayList<>();
         points.add(new Vector2D(638, 780));
         points.add(new Vector2D(1300, 1105));
@@ -320,6 +322,9 @@ public class MyGdxGame extends ApplicationAdapter{
         gamingZone = new GamingZone(points);
     }
 
+    /**
+     * prevent image stretching when resizing a window
+     */
     @Override
     public void resize(int width, int height){
         super.resize(width, height);
@@ -328,6 +333,7 @@ public class MyGdxGame extends ApplicationAdapter{
         camera.update();
     }
 
+    //dunno what it is
     @Override
     public void render(){
 
@@ -343,6 +349,7 @@ public class MyGdxGame extends ApplicationAdapter{
 
     }
 
+    //dunno what it is
     @Override
     public void dispose(){
         batch.dispose();

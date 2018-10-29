@@ -45,17 +45,22 @@ public class ZombieActor extends Actor{
         return mode;
     }
 
+    //set mode of animation (mode types above in constants)
     public void setZombieMode(int mode){
+        //mode does not change if new mode the same as the current mode
         if(this.mode == mode) return;
         this.mode = mode;
         duration = 0;
         zombie = getAnimationMode(mode);
     }
 
+    //reflect texture depending on where zombie goes
+    //true if to the right side
     public void setFlip(boolean flag){
         flip = flag;
     }
 
+    //draw texture
     @Override
     public void draw(Batch batch, float alpha){
         Sprite sprite = new Sprite(zombie.getAnimation().getKeyFrame(duration, true));
@@ -73,6 +78,7 @@ public class ZombieActor extends Actor{
         }
     }
 
+    //change animation depending on time
     @Override
     public void act(float delta){
         super.act(delta);

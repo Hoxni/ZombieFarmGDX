@@ -8,6 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.List;
 
+/**
+ * allow to drag-and-drop map with mouse (dunno how it works)
+ * allow to set target for main zombie with mouse (describe below)
+ */
+
 public class OrthoCamController extends Stage {
     private final OrthographicCamera camera;
     private final Vector3 curr = new Vector3();
@@ -27,12 +32,13 @@ public class OrthoCamController extends Stage {
         this.gamingZone = gamingZone;
     }
 
+    //dunno how it works
     @Override
     public boolean touchDragged (int x, int y, int pointer) {
         Vector3 delta = new Vector3();
         camera.unproject(curr.set(x, y, 0));
 
-        if (!(last.x == -1 && last.y == -1 && last.z == -1) && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+        if (!(last.x == -1 && last.y == -1 && last.z == -1) && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {//drag map with left button
             camera.unproject(delta.set(last.x, last.y, 0));
             delta.sub(curr);
 
@@ -58,20 +64,23 @@ public class OrthoCamController extends Stage {
 
     @Override
     public boolean touchUp (int x, int y, int pointer, int button) {
+        //dunno what it is
         last.set(-1, -1, -1);
-        Vector3 clickCoordinates = new Vector3(x, y, 0);
-        Vector3 position = camera.unproject(clickCoordinates);
-        Vector2D point = new Vector2D(position.x, position.y);
-        gamingZone.checkGamingZone(zombie.getLocation(), point);
+
+        //used to set target on map
+        Vector3 clickCoordinates = new Vector3(x, y, 0); //get coordinates
+        Vector3 position = camera.unproject(clickCoordinates); //dunno what it is
+        Vector2D target = new Vector2D(position.x, position.y); //set target location
+        gamingZone.checkGamingZone(zombie.getLocation(), target); //check is in game zone
         if(button == Input.Buttons.RIGHT){
-            zombie.follow(point);
+            zombie.follow(target); //zombie just follow
         }
-        if(button == Input.Buttons.LEFT){
+        if(button == Input.Buttons.LEFT){ //zombie going to cutting down a tree
             for(TreeTexture tree : trees){
-                if(tree.contains(point.x, point.y)){
+                if(tree.contains(target.x, target.y)){
                     zombie.setTreeTarget(tree);
-                    point.set(tree.getCutPosition().x, tree.getCutPosition().y);
-                    zombie.follow(point);
+                    target.set(tree.getCutPosition().x, tree.getCutPosition().y);
+                    zombie.follow(target);
                     break;
                 }
             }

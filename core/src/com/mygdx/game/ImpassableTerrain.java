@@ -2,6 +2,12 @@ package com.mygdx.game;
 
 import java.util.*;
 
+/**
+ * used to prohibit zombies to walk on the flat evaluation in the middle of the map
+ * (it is a big rhombus in the centre)
+ * works the same as a building
+ */
+
 public class ImpassableTerrain implements Obstruction{
     protected List<Vector2D> cornerPoints;
 
