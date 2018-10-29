@@ -9,8 +9,6 @@ public abstract class SpecialSprite{
     final float maxForce = Settings.SPRITE_MAX_FORCE;
     final float maxSpeed = Settings.SPRITE_MAX_SPEED;
 
-    // view dimensions
-
     float centerX;
     float centerY;
 
@@ -20,8 +18,6 @@ public abstract class SpecialSprite{
         this.location = location;
         this.velocity = new Vector2D(0, 0);
         this.acceleration = new Vector2D(0, 0);
-        //this.actor = actor;
-        //setCenter();
     }
 
     abstract void setCenter();
@@ -30,7 +26,7 @@ public abstract class SpecialSprite{
         acceleration.add(force);
     }
 
-    public void move() {
+    public void move(){
 
         // set velocity depending on acceleration
         velocity.add(acceleration);
@@ -45,7 +41,7 @@ public abstract class SpecialSprite{
         //angle = velocity.heading2D();
 
         // clear acceleration
-        acceleration.multiply(0);
+        acceleration.scl(0);
 
     }
 
@@ -56,21 +52,21 @@ public abstract class SpecialSprite{
 
         Vector2D desired = Vector2D.subtract(target, location);
 
-        // The distance is the magnitude of the vector pointing from target to target.
+        // The distance is the len2 of the vector pointing from target to target.
 
-        float d = desired.magnitude();
-        desired.normalize();
+        float d = desired.len2();
+        desired.nor();
 
         // If we are closer than 30 pixels...
         if (d < Settings.SPRITE_SLOW_DOWN_DISTANCE) {
             //float m = Utils.map(d, 0, Settings.SPRITE_SLOW_DOWN_DISTANCE, 0, maxSpeed);
             //uncomment string above and replace 0 with m than zombie will slow down near target point
             //go to "Settings" to set mode of zombie moving
-            desired.multiply(0);
+            desired.scl(0);
         }
         // Otherwise, proceed at maximum speed.
         else {
-            desired.multiply(maxSpeed);
+            desired.scl(maxSpeed);
         }
 
         // The usual steering = desired - velocity

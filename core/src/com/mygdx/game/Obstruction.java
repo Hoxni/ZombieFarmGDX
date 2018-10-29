@@ -126,7 +126,7 @@ public interface Obstruction{
                 graph.add(j, new ArrayList<>());
                 int q;
                 int v;
-                if(Vector2D.subtract(ip, poly.get(i)).magnitude() <= Vector2D.subtract(ip, poly.get(next)).magnitude()){
+                if(Vector2D.subtract(ip, poly.get(i)).len2() <= Vector2D.subtract(ip, poly.get(next)).len2()){
                     q = i;
                     v = next;
                 } else {

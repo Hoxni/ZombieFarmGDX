@@ -15,10 +15,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -71,16 +70,20 @@ public class MyGdxGame extends ApplicationAdapter{
         createMobZombies();
         createZombiesUpdater();
 
-        Drawable d = new TextureRegionDrawable(new TextureRegion(new Texture(Paths.HAT_STAND)));
+        /*Drawable d = new TextureRegionDrawable(new TextureRegion(new Texture(Paths.HAT_STAND)));
         d.setBottomHeight(200);
         d.setRightWidth(200);
         ImageButton b = new ImageButton(d);
         b.setPosition(0, 0);
         b.setSize(500, 500);
         b.setLayoutEnabled(true);
-        cameraController.addActor(b);
-
-
+        b.addCaptureListener(event -> {
+            if(event.isCapture())
+            System.out.println("QWE");
+            return false;
+        });
+        cameraController.addActor(b);*/
+        
     }
 
     public void createMap(){

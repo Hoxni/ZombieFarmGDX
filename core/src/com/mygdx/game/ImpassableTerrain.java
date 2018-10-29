@@ -34,8 +34,8 @@ public class ImpassableTerrain implements Obstruction{
             }
         }
 
-        Vector2D firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(c -> Vector2D.subtract(location, c).magnitude()));
-        Vector2D secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(c -> Vector2D.subtract(target, c).magnitude()));
+        Vector2D firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(c -> Vector2D.subtract(location, c).len2()));
+        Vector2D secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(c -> Vector2D.subtract(target, c).len2()));
 
         //points of bypass
         List<Vector2D> path = new ArrayList<>();
@@ -53,8 +53,8 @@ public class ImpassableTerrain implements Obstruction{
 
         //if line intersects two opposite edges
         //find second bypass point
-        Vector2D closestToSecond = Collections.min(cornerPoints, Comparator.comparingDouble(c -> Vector2D.subtract(secondIntersection, c).magnitude()));
-        int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> Vector2D.subtract(firstIntersection, c.getValue()).magnitude())).getKey(); //first intersected edge
+        Vector2D closestToSecond = Collections.min(cornerPoints, Comparator.comparingDouble(c -> Vector2D.subtract(secondIntersection, c).len2()));
+        int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> Vector2D.subtract(firstIntersection, c.getValue()).len2())).getKey(); //first intersected edge
         int c = cornerPoints.indexOf(closestToSecond); //index of closest corner-point for secondIntersection-point
         int index = -1;
 

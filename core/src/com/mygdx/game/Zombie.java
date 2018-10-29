@@ -47,15 +47,15 @@ public class Zombie extends SpecialSprite{
 
         //prohibits to change location while zombie carry a timber to initial point
         if(returnToStart){
-            if(Vector2D.subtract(Settings.INITIAL_POINT, location).magnitude() < Settings.STOP_DISTANCE){
+            if(Vector2D.subtract(Settings.INITIAL_POINT, location).len2() < Settings.STOP_DISTANCE){
                 returnToStart = false;
                 hasTimber = false;
             }
         }
 
-        if(Vector2D.subtract(location, currentTargetPoint).magnitude() < Settings.STOP_DISTANCE){
+        if(Vector2D.subtract(location, currentTargetPoint).len2() < Settings.STOP_DISTANCE){
             //stop zombie if he already on target point to predict stupid bugs with moving
-            if(Vector2D.subtract(location, target).magnitude() < Settings.STOP_DISTANCE){
+            if(Vector2D.subtract(location, target).len2() < Settings.STOP_DISTANCE){
                 points.clear();
             }
             stop();
@@ -107,7 +107,7 @@ public class Zombie extends SpecialSprite{
         }
         //if zombie will cut down a tree, cut-animation will play instead of stay-animation
         //zombie can cut down a tree if stands on special point (cutPosition) near this tree
-        if(cutDown && Vector2D.subtract(location, treeTarget.getCutPosition()).magnitude() < Settings.STOP_DISTANCE){
+        if(cutDown && Vector2D.subtract(location, treeTarget.getCutPosition()).len2() < Settings.STOP_DISTANCE){
             zombieActor.setFlip(true);
             treeTarget.chopDown(this);
         } else if(!whiteWaveDisplayed){//prohibits stand-animation if zombie is going to the target point
@@ -195,7 +195,7 @@ public class Zombie extends SpecialSprite{
 
         //sort collections of bypass point from closest to farthest
         //collection sorts by first bypass point
-        paths.sort(Comparator.comparingDouble(c -> Vector2D.subtract(location, c.get(0)).magnitude()));
+        paths.sort(Comparator.comparingDouble(c -> Vector2D.subtract(location, c.get(0)).len2()));
 
         layersList.sort(Comparator.comparingDouble(c -> Math.abs(location.y - c.getKey())));
         layers.addAll(layersList);
