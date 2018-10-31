@@ -241,8 +241,7 @@ public class Zombie extends SpecialSprite{
     /**
      * used to correct displaying if zombie moving
      */
-    @Override
-    void setCenter(){
+    private void setCenter(){
         this.centerX = zombieActor.getWidth() / 2;
         this.centerY = zombieActor.getHeight() / 2 + Settings.HEIGHT_OFFSET;
     }

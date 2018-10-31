@@ -22,8 +22,6 @@ public abstract class SpecialSprite{
         this.acceleration = new Vector2(0, 0);
     }
 
-    abstract void setCenter();
-
     public void applyForce(Vector2 force) {
         acceleration.add(force);
     }

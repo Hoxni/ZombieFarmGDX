@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TreeTexture extends TextureMapObject implements Obstruction{
     protected final float OFFSET = 12;

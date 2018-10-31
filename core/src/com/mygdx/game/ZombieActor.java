@@ -6,16 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class ZombieActor extends Actor{
     static final int
-            ZOMBIE_STAGES = 7;
-
-    static final int
+            ZOMBIE_STAGES = 6,
             STAND = 0,
             WALK_DOWN = 1,
             WALK_UP = 2,
             WALKWOOD_DOWN = 3,
             WALKWOOD_UP = 4,
-            WOODCUT = 5,
-            WAKEUP = 6;
+            WOODCUT = 5;
 
     protected int mode = 0;
     protected boolean flip = true;
@@ -93,7 +90,6 @@ public class ZombieActor extends Actor{
         zombieAnimations[3] = new SpecialAnimation(Paths.WOODCUTTER_WALKWOOD_DOWN, Paths.WOODCUTTER_WALKWOOD_DOWN_XML);
         zombieAnimations[4] = new SpecialAnimation(Paths.WOODCUTTER_WALKWOOD_UP, Paths.WOODCUTTER_WALKWOOD_UP_XML);
         zombieAnimations[5] = new SpecialAnimation(Paths.WOODCUTTER_WOODCUT, Paths.WOODCUTTER_WOODCUT_XML);
-        zombieAnimations[6] = new SpecialAnimation(Paths.WOODCUTTER_WAKEUP, Paths.WOODCUTTER_WAKEUP_XML);
         zombie = zombieAnimations[0];
     }
 
