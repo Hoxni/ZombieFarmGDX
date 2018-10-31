@@ -25,7 +25,6 @@ public class BuildingTexture extends TextureMapObject implements Obstruction{
         cornerPoints.add(new Vector2(getX() + width / 2, getY() + height + OFFSET));
         cornerPoints.add(new Vector2(getX() + width + OFFSET, getY() + 145));
         cornerPoints.add(new Vector2(getX() + width / 2, getY() + VERTICAL_OFFSET - OFFSET));
-        System.out.println(height + "qwe");
     }
 
 
