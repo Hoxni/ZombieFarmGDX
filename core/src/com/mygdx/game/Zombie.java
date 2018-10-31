@@ -2,12 +2,13 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
 public class Zombie extends SpecialSprite{
-    protected Vector2D currentTargetPoint;
-    protected Vector2D target;
+    protected Vector2 currentTargetPoint;
+    protected Vector2 target;
     protected final WhiteWave whiteWave;
     protected final ZombieActor zombieActor;
     protected TreeTexture treeTarget;
@@ -15,25 +16,24 @@ public class Zombie extends SpecialSprite{
     protected boolean cutDown = false; //"true" when zombie is going to cut down a tree
     protected boolean hasTimber = false; //"true" when zombie carries a timber
     protected boolean returnToStart = false; //"true" when zombie returns to initial point
-    protected boolean wakeUp = true; //used for wake up animation when game starts
     protected boolean goDown = true; //"true" when zombie goes from top to bottom of frame
-    protected final List<Vector2D> points;
+    protected final List<Vector2> points;
     protected final List<Obstruction> obstructions;
     protected final Deque<AbstractMap.SimpleEntry<Float, Integer>> layers; //layers of obstructions
     protected int pointIndex = 0; //index of current target point
     protected int layerIndex = 0; //index of current layerIndex
     protected MapLayer layer;
-    protected MapObject mapObject;
+    protected final MapObject mapObject;
 
-    public Zombie(Vector2D location, ZombieActor actor, WhiteWave point, List<? extends Obstruction> obstructions){
+    public Zombie(Vector2 location, ZombieActor actor, WhiteWave point, List<Obstruction> obstructions){
         super(location);
         zombieActor = actor;
         this.whiteWave = point;
         setCenter();
-        currentTargetPoint = Settings.INITIAL_POINT.copy();
-        target = Settings.INITIAL_POINT.copy();
+        currentTargetPoint = Settings.INITIAL_POINT.cpy();
+        target = Settings.INITIAL_POINT.cpy();
         points = new ArrayList<>();
-        this.obstructions = (ArrayList<Obstruction>) obstructions;
+        this.obstructions = obstructions;
         layers = new ArrayDeque<>();
         mapObject = new MapObject();
         mapObject.getProperties().put("actor", zombieActor);
@@ -43,19 +43,18 @@ public class Zombie extends SpecialSprite{
     }
 
     public void update(){
-        //if(wakeUp) return;
 
         //prohibits to change location while zombie carry a timber to initial point
         if(returnToStart){
-            if(Vector2D.subtract(Settings.INITIAL_POINT, location).len2() < Settings.STOP_DISTANCE){
+            if(location.dst2(Settings.INITIAL_POINT) < Settings.STOP_DISTANCE){
                 returnToStart = false;
                 hasTimber = false;
             }
         }
 
-        if(Vector2D.subtract(location, currentTargetPoint).len2() < Settings.STOP_DISTANCE){
+        if(location.dst2(currentTargetPoint) < Settings.STOP_DISTANCE){
             //stop zombie if he already on target point to predict stupid bugs with moving
-            if(Vector2D.subtract(location, target).len2() < Settings.STOP_DISTANCE){
+            if(location.dst2(target) < Settings.STOP_DISTANCE){
                 points.clear();
             }
             stop();
@@ -108,7 +107,7 @@ public class Zombie extends SpecialSprite{
         }
         //if zombie will cut down a tree, cut-animation will play instead of stay-animation
         //zombie can cut down a tree if stands on special point (cutPosition) near this tree
-        if(cutDown && Vector2D.subtract(location, treeTarget.getCutPosition()).len2() < Settings.STOP_DISTANCE){
+        if(cutDown && location.dst2(treeTarget.getCutPosition()) < Settings.STOP_DISTANCE){
             zombieActor.setFlip(true);
             treeTarget.chopDown(this);
         } else if(!whiteWaveDisplayed){//prohibits stand-animation if zombie is going to the target point
@@ -150,20 +149,16 @@ public class Zombie extends SpecialSprite{
     /**
      * create path to the target point
      */
-    void follow(Vector2D target){
-        if(returnToStart) target = Settings.INITIAL_POINT.copy();
+    void follow(Vector2 target){
+        if(returnToStart) target = Settings.INITIAL_POINT.cpy();
         pointIndex = 0;
         points.clear();
         layers.clear();
-        List<List<Vector2D>> paths = new ArrayList<>();
+        List<List<Vector2>> paths = new ArrayList<>();
         List<AbstractMap.SimpleEntry<Float, Integer>> layersList = new ArrayList<>();
 
-        //true is zombie moves from top to bottom
-        if(location.y < target.y){
-            goDown = true;
-        } else {
-            goDown = false;
-        }
+        //true if zombie moves from top to bottom
+        goDown = location.y < target.y;
 
         //get collections of bypass points
         for(Obstruction obstruction : obstructions){
@@ -176,30 +171,17 @@ public class Zombie extends SpecialSprite{
                 layersList.add(new AbstractMap.SimpleEntry<>(obstruction.getCenter().y, obstruction.getLayer()));
             }
 
-            List<Vector2D> intersectionPoints = Obstruction.getIntersectionPoints(location, target, obstruction.getCornerPoints());
-            //if zombie tries to move inside impassable terrain
-            if(obstruction instanceof ImpassableTerrain){
-                //all of this used only to predict stupid bugs
-                if(Obstruction.isPointInPolygon(target, obstruction.getCornerPoints())){
-                    if(!intersectionPoints.isEmpty()){
-                        target.set(intersectionPoints.get(0).x, intersectionPoints.get(0).y);
-                    } else {
-                        target.set(location.x, location.y);
-                    }
-                    points.clear();
-                    points.add(target);
-                    break;
-                }
-            }
             //find bypass
-            if(!intersectionPoints.isEmpty()){
-                paths.add(obstruction.getBypass(location, target, intersectionPoints));
+            List<Vector2> bypass = obstruction.getBypass(location, target);
+            if(bypass != null){
+                paths.add(bypass);
             }
+
         }
 
         //sort collections of bypass point from closest to farthest
         //collection sorts by first bypass point
-        paths.sort(Comparator.comparingDouble(c -> Vector2D.subtract(location, c.get(0)).len2()));
+        paths.sort(Comparator.comparingDouble(c -> location.dst2(c.get(0))));
 
         //sort special list from farthest to closest location.y of obstruction to zombie.location.y
         //zombie alternately passes all of obstructions in special list
@@ -208,7 +190,7 @@ public class Zombie extends SpecialSprite{
         layers.addAll(layersList);
 
         //add points
-        for(List<Vector2D> path : paths){
+        for(List<Vector2> path : paths){
             points.addAll(path);
         }
 

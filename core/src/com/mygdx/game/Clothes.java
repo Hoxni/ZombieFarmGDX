@@ -4,7 +4,6 @@ abstract class Clothes{
     protected final int
             NUMBER_OF_MODES = 6;
     protected final SpecialAnimation[] modes;
-    protected int modeIndex = 0;
 
     public Clothes(
             String stand,
@@ -26,10 +25,6 @@ abstract class Clothes{
         modes[3] = new SpecialAnimation(woodDown, woodDownXML);
         modes[4] = new SpecialAnimation(woodUp, woodUpXML);
         modes[5] = new SpecialAnimation(woodCut, woodCutXML);
-    }
-
-    public void setMode(int i){
-        modeIndex = i;
     }
 
     public SpecialAnimation getHatMode(int i){

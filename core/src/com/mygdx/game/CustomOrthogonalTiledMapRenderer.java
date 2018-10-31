@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomOrthogonalTiledMapRenderer extends OrthogonalTiledMapRenderer{
-    private List<Zombie> zombies;
+    private final List<Zombie> zombies;
 
     public CustomOrthogonalTiledMapRenderer(TiledMap map){
         super(map);

@@ -103,13 +103,11 @@ public class ZombieActor extends Actor{
 
     public void setHat(Hat hat){
         this.hat = hat;
-        hat.setMode(mode);
         hasHat = true;
     }
 
     public void setCloth(Cloth cloth){
         this.cloth = cloth;
-        cloth.setMode(mode);
         hasCloth = true;
     }
 }

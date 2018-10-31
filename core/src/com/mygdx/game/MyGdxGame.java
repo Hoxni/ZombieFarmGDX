@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.parser.ConfigurationParser;
@@ -214,7 +215,7 @@ public class MyGdxGame extends ApplicationAdapter{
         zombieActor.setCloth(cloths.get(1));
         zombieActor.setHat(hats.get(1));
         zombieActor.setPosition(Settings.INITIAL_POINT.x, Settings.INITIAL_POINT.y);
-        zombie = new Zombie(Settings.INITIAL_POINT.copy(), zombieActor, whiteWave, obstructions);
+        zombie = new Zombie(Settings.INITIAL_POINT.cpy(), zombieActor, whiteWave, obstructions);
 
         ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
 
@@ -230,7 +231,7 @@ public class MyGdxGame extends ApplicationAdapter{
         for(int i = 0; i < Settings.ZOMBIES_NUMBER; i++){
             ZombieActor zombieActor = new ZombieActor();
             zombieActor.setPosition(Settings.INITIAL_POINT.x, Settings.INITIAL_POINT.y);
-            Zombie zombie = new Zombie(Settings.INITIAL_POINT.copy(), zombieActor, whiteWave, obstructions);
+            Zombie zombie = new Zombie(Settings.INITIAL_POINT.cpy(), zombieActor, whiteWave, obstructions);
             zombies.add(zombie);
             ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
         }
@@ -242,7 +243,7 @@ public class MyGdxGame extends ApplicationAdapter{
             @Override
             public void run(){
                 for(Zombie mob : zombies){
-                    Vector2D target = new Vector2D(random.nextInt(3400), random.nextInt(2700));
+                    Vector2 target = new Vector2(random.nextInt(3400), random.nextInt(2700));
                     gamingZone.checkGamingZone(mob.getLocation(), target);
                     mob.follow(target);
                     for(TreeTexture tree : trees){
@@ -302,22 +303,22 @@ public class MyGdxGame extends ApplicationAdapter{
         }
 
         //set impassable terrain
-        List<Vector2D> points = new ArrayList<>();
-        points.add(new Vector2D(638, 780));
-        points.add(new Vector2D(1300, 1105));
-        points.add(new Vector2D(2375, 585));
-        points.add(new Vector2D(1700, 80));
+        List<Vector2> points = new ArrayList<>();
+        points.add(new Vector2(638, 780));
+        points.add(new Vector2(1300, 1105));
+        points.add(new Vector2(2375, 585));
+        points.add(new Vector2(1700, 80));
 
         ImpassableTerrain elevation = new ImpassableTerrain(points);
         obstructions.add(elevation);
     }
 
     public void setGamingZone(){
-        List<Vector2D> points = new ArrayList<>();
-        points.add(new Vector2D(150, 1050));
-        points.add(new Vector2D(1710, 1845));
-        points.add(new Vector2D(3270, 1065));
-        points.add(new Vector2D(1710, 265));
+        List<Vector2> points = new ArrayList<>();
+        points.add(new Vector2(150, 1050));
+        points.add(new Vector2(1710, 1845));
+        points.add(new Vector2(3270, 1065));
+        points.add(new Vector2(1710, 265));
 
         gamingZone = new GamingZone(points);
     }

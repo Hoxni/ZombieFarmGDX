@@ -1,10 +1,12 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.math.Vector2;
+
 public abstract class SpecialSprite{
 
-    final Vector2D location;
-    final Vector2D velocity;
-    final Vector2D acceleration;
+    final Vector2 location;
+    final Vector2 velocity;
+    final Vector2 acceleration;
 
     final float maxForce = Settings.SPRITE_MAX_FORCE;
     final float maxSpeed = Settings.SPRITE_MAX_SPEED;
@@ -13,16 +15,16 @@ public abstract class SpecialSprite{
     float centerY;
 
 
-    public SpecialSprite(Vector2D location) {
+    public SpecialSprite(Vector2 location) {
 
         this.location = location;
-        this.velocity = new Vector2D(0, 0);
-        this.acceleration = new Vector2D(0, 0);
+        this.velocity = new Vector2(0, 0);
+        this.acceleration = new Vector2(0, 0);
     }
 
     abstract void setCenter();
 
-    public void applyForce(Vector2D force) {
+    public void applyForce(Vector2 force) {
         acceleration.add(force);
     }
 
@@ -48,9 +50,11 @@ public abstract class SpecialSprite{
     /**
      * Move sprite towards target
      */
-    public void seek(Vector2D target) {
+    public void seek(Vector2 target) {
 
-        Vector2D desired = Vector2D.subtract(target, location);
+        //Vector2.subtract(target, location);
+        Vector2 desired = target.cpy();
+        desired.sub(location);
 
         // The distance is the len2 of the vector pointing from target to target.
 
@@ -70,7 +74,9 @@ public abstract class SpecialSprite{
         }
 
         // The usual steering = desired - velocity
-        Vector2D steer = Vector2D.subtract(desired, velocity);
+        //Vector2.subtract(desired, velocity);
+        Vector2 steer = desired.cpy();
+        steer.sub(velocity);
         steer.limit(maxForce);
 
         applyForce(steer);
@@ -82,16 +88,11 @@ public abstract class SpecialSprite{
      */
     abstract void display();
 
-    public Vector2D getLocation() {
+    public Vector2 getLocation() {
         return location;
     }
 
-    public void setLocation( float x, float y) {
-        location.x = x;
-        location.y = y;
-    }
-
-    public void update(Vector2D v){
+    public void update(Vector2 v){
         seek(v);
         move();
         display();

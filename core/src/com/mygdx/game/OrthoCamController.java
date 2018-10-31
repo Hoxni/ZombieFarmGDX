@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -17,11 +18,11 @@ public class OrthoCamController extends Stage {
     private final OrthographicCamera camera;
     private final Vector3 curr = new Vector3();
     private final Vector3 last = new Vector3(-1, -1, -1);
-    private int mapHeight;
-    private int mapWidth;
-    private Zombie zombie;
-    private List<TreeTexture> trees;
-    private GamingZone gamingZone;
+    private final int mapHeight;
+    private final int mapWidth;
+    private final Zombie zombie;
+    private final List<TreeTexture> trees;
+    private final GamingZone gamingZone;
 
     public OrthoCamController (OrthographicCamera camera, int mapHeight, int mapWidth, Zombie zombie, List<TreeTexture> trees, GamingZone gamingZone) {
         this.camera = camera;
@@ -70,7 +71,7 @@ public class OrthoCamController extends Stage {
         //used to set target on map
         Vector3 clickCoordinates = new Vector3(x, y, 0); //get coordinates
         Vector3 position = camera.unproject(clickCoordinates); //dunno what it is
-        Vector2D target = new Vector2D(position.x, position.y); //set target location
+        Vector2 target = new Vector2(position.x, position.y); //set target location
         gamingZone.checkGamingZone(zombie.getLocation(), target); //check is in game zone
         if(button == Input.Buttons.RIGHT){
             zombie.follow(target); //zombie just follow
