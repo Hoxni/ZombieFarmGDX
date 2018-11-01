@@ -4,13 +4,11 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
+import static com.badlogic.gdx.math.MathUtils.isEqual;
+
 public interface Obstruction{
 
-    float EQUITY_TOLERANCE = 0.01f;
-
-    static boolean isEqual(float d1, float d2){
-        return Math.abs(d1 - d2) <= EQUITY_TOLERANCE;
-    }
+    float EPS = -1f;
 
     static Vector2 getIntersectionPoint(Vector2 l1p1, Vector2 l1p2, Vector2 l2p1, Vector2 l2p2){
         float A1 = l1p2.y - l1p1.y;
@@ -23,20 +21,20 @@ public interface Obstruction{
 
         //lines are parallel
         float det = A1 * B2 - A2 * B1;
-        if(isEqual(det, 0)){
+        if(isEqual(det, 0)){ //MathUtils.isEqual()
             return null; //parallel lines
         } else {
             float x = (B2 * C1 - B1 * C2) / det;
             float y = (A1 * C2 - A2 * C1) / det;
-            boolean online1 = ((Math.min(l1p1.x, l1p2.x) <= x || isEqual(Math.min(l1p1.x, l1p2.x), x))
-                    && (Math.max(l1p1.x, l1p2.x) >= x || isEqual(Math.max(l1p1.x, l1p2.x), x))
-                    && (Math.min(l1p1.y, l1p2.y) <= y || isEqual(Math.min(l1p1.y, l1p2.y), y))
-                    && (Math.max(l1p1.y, l1p2.y) >= y || isEqual(Math.max(l1p1.y, l1p2.y), y))
+            boolean online1 = ((Math.min(l1p1.x, l1p2.x) < x || isEqual(Math.min(l1p1.x, l1p2.x), x))
+                    && (Math.max(l1p1.x, l1p2.x) > x || isEqual(Math.max(l1p1.x, l1p2.x), x))
+                    && (Math.min(l1p1.y, l1p2.y) < y || isEqual(Math.min(l1p1.y, l1p2.y), y))
+                    && (Math.max(l1p1.y, l1p2.y) > y || isEqual(Math.max(l1p1.y, l1p2.y), y))
             );
             boolean online2 = ((Math.min(l2p1.x, l2p2.x) <= x || isEqual(Math.min(l2p1.x, l2p2.x), x))
-                    && (Math.max(l2p1.x, l2p2.x) >= x || isEqual(Math.max(l2p1.x, l2p2.x), x))
-                    && (Math.min(l2p1.y, l2p2.y) <= y || isEqual(Math.min(l2p1.y, l2p2.y), y))
-                    && (Math.max(l2p1.y, l2p2.y) >= y || isEqual(Math.max(l2p1.y, l2p2.y), y))
+                    && (Math.max(l2p1.x, l2p2.x) > x || isEqual(Math.max(l2p1.x, l2p2.x), x))
+                    && (Math.min(l2p1.y, l2p2.y) < y || isEqual(Math.min(l2p1.y, l2p2.y), y))
+                    && (Math.max(l2p1.y, l2p2.y) > y || isEqual(Math.max(l2p1.y, l2p2.y), y))
             );
 
             if(online1 && online2)
@@ -45,7 +43,7 @@ public interface Obstruction{
         return null; //intersection is at out of at least one segment.
     }
 
-    //intersection of lines (not segments)
+    //intersection of line (not segments) and segments
     static Vector2 getLineIntersection(Vector2 l1p1, Vector2 l1p2, Vector2 l2p1, Vector2 l2p2){
         float A1 = l1p2.y - l1p1.y;
         float B1 = l1p1.x - l1p2.x;
@@ -62,8 +60,17 @@ public interface Obstruction{
         } else {
             float x = (B2 * C1 - B1 * C2) / det;
             float y = (A1 * C2 - A2 * C1) / det;
-            return new Vector2(x, y);
+
+            boolean online = ((Math.min(l2p1.x, l2p2.x) < x || isEqual(Math.min(l2p1.x, l2p2.x), x))
+                    && (Math.max(l2p1.x, l2p2.x) > x || isEqual(Math.max(l2p1.x, l2p2.x), x))
+                    && (Math.min(l2p1.y, l2p2.y) < y || isEqual(Math.min(l2p1.y, l2p2.y), y))
+                    && (Math.max(l2p1.y, l2p2.y) > y || isEqual(Math.max(l2p1.y, l2p2.y), y))
+            );
+
+            if(online)
+                return new Vector2(x, y);
         }
+        return null; //intersection is at out of at least one segment.
     }
 
     static List<Vector2> getIntersectionPoints(Vector2 l1p1, Vector2 l1p2, List<Vector2> poly){
@@ -73,7 +80,7 @@ public interface Obstruction{
         //Set is used to predict adding equal points
         Set<Vector2> intersectionPoints = new TreeSet<>((o1, o2) -> {
             //check if points are equal
-            if(o1.epsilonEquals(o2))
+            if(o1.epsilonEquals(o2, EPS))
                 return 0;
             else return 1;
         });
@@ -91,6 +98,7 @@ public interface Obstruction{
         return new ArrayList<>(intersectionPoints);
     }
 
+    //intersections of line (not segment) and polygon (consist of segments)
     static List<Vector2> getLineIntersections(Vector2 l1p1, Vector2 l1p2, List<Vector2> poly){
         //if line intersects polygon in corner point, function adds this point twice,
         //because two edges of polygon contain this point
@@ -98,7 +106,7 @@ public interface Obstruction{
         //Set is used to predict adding equal points
         Set<Vector2> intersectionPoints = new TreeSet<>((o1, o2) -> {
             //check if points are equal
-            if(o1.epsilonEquals(o2))
+            if(o1.epsilonEquals(o2, EPS))
                 return 0;
             else return 1;
         });
@@ -151,53 +159,48 @@ public interface Obstruction{
 
         //if target-point is situated inside of building
         if(Obstruction.isPointInPolygon(target, getCornerPoints())){
-            List<Vector2> points = Obstruction.getIntersectionPoints(location, target, getCornerPoints());
-            if(points.isEmpty()){
-                //predict stupid bugs
-                points = Obstruction.getLineIntersections(location, target, getCornerPoints());
-            }
+            List<Vector2> points = Obstruction.getLineIntersections(location, target, getCornerPoints());
+
+            //set target as closest to location intersection point
             target.set(Collections.min(points, Comparator.comparingDouble(location::dst2))); //o -> Vector2.subtract(location, o).len2()
+
+            //return list of one element
             return Collections.singletonList(target);
         }
 
+        //get intersection points
         List<Vector2> intersectionPoints = Obstruction.getIntersectionPoints(location, target, getCornerPoints());
 
-        if(intersectionPoints.isEmpty()){
+        //return null if zombie has not to bypass this obstruction
+        if(intersectionPoints.isEmpty() && !Obstruction.isPointInPolygon(location, getCornerPoints())){
             return null;
         }
 
-        List<Map.Entry<Integer, Vector2>> intersectedEdges = new ArrayList<>();
+        //set of intersection points and edges that contain these points
+        TreeSet<Map.Entry<Vector2, Integer>> intersectedEdges = new TreeSet<>((o1, o2) -> {
+            if(o1.getKey().epsilonEquals(o2.getKey(), EPS))
+                return 0;
+            else return 1;
+        });
 
-        //predict stupid bugs
-        if(intersectionPoints.size() == 1){
-            List<Map.Entry<Integer, Vector2>> buff = new ArrayList<>();
 
-            for(int i = 0; i < getCornerPoints().size(); i++){
-                int next = (i + 1 == getCornerPoints().size()) ? 0 : i + 1;
-
-                Vector2 ip = Obstruction.getLineIntersection(location, target, getCornerPoints().get(i), getCornerPoints().get(next));
-
-                if(ip != null){
-                    buff.add(new AbstractMap.SimpleEntry<>(i, ip));
-                }
-            }
-            Map.Entry<Integer, Vector2> correction =
-                    Collections.min(buff, Comparator.comparingDouble(c-> location.dst2(c.getValue())));
-            intersectedEdges.add(correction);
-            intersectionPoints.add(correction.getValue());
-            location.set(correction.getValue());
-        }
-
+        //if it doesn't need to fix stupid bugs
         //find edges which have intersection with path-line
         //this code duplicates "getIntersectionPoints" and can be optimized as described above
         for(int i = 0; i < getCornerPoints().size(); i++){
             int next = (i + 1 == getCornerPoints().size()) ? 0 : i + 1;
 
-            Vector2 ip = Obstruction.getIntersectionPoint(location, target, getCornerPoints().get(i), getCornerPoints().get(next));
+            Vector2 ip = Obstruction.getLineIntersection(location, target, getCornerPoints().get(i), getCornerPoints().get(next));
 
             if(ip != null){
-                intersectedEdges.add(new AbstractMap.SimpleEntry<>(i, ip));
+                intersectedEdges.add(new AbstractMap.SimpleEntry<>(ip, i));
             }
+        }
+
+        //adds correct intersection points
+        intersectionPoints.clear();
+        for(Map.Entry<Vector2, Integer> o : intersectedEdges){
+            intersectionPoints.add(o.getKey());
         }
 
         Vector2 firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(location::dst2)); //c -> Vector2.subtract(location, c).len2()
@@ -207,11 +210,10 @@ public interface Obstruction{
         List<Vector2> path = new ArrayList<>();
         path.add(firstIntersection);
 
-
         //if line intersects two adjacent edges
-        if(Math.abs((intersectedEdges.get(0).getKey() - intersectedEdges.get(1).getKey()) % 2) == 1){
-            int min = Math.min(intersectedEdges.get(0).getKey(), intersectedEdges.get(1).getKey());
-            int index = Math.abs(intersectedEdges.get(0).getKey() - intersectedEdges.get(1).getKey()) % 3 + min;
+        if(Math.abs((intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 2) == 1){
+            int min = Math.min(intersectedEdges.first().getValue(), intersectedEdges.last().getValue());
+            int index = Math.abs(intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 3 + min;
             path.add(getCornerPoints().get(index));
             path.add(secondIntersection);
             return path;
@@ -221,7 +223,7 @@ public interface Obstruction{
         //find second bypass point
         Vector2 closestToSecond = Collections.min(getCornerPoints(), Comparator.comparingDouble(secondIntersection::dst2)); //c -> Vector2.subtract(secondIntersection, c).len2()
         //first intersected edge
-        int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> firstIntersection.dst2(c.getValue()))).getKey(); //c -> Vector2.subtract(firstIntersection, c.getValue()).len2())).getKey()
+        int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> firstIntersection.dst2(c.getKey()))).getValue(); //c -> Vector2.subtract(firstIntersection, c.getValue()).len2())).getKey()
         int c = getCornerPoints().indexOf(closestToSecond); //index of closest corner-point for secondIntersection-point
         int index = -1;
 

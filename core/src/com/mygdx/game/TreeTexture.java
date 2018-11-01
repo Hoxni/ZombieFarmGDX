@@ -65,6 +65,7 @@ public class TreeTexture extends TextureMapObject implements Obstruction{
         cornerPoints.add(new Vector2(getPosX(), getPosY() + OFFSET));
         cornerPoints.add(new Vector2(getPosX() + OFFSET * 3, getPosY()));
         cornerPoints.add(new Vector2(getPosX() + OFFSET, getPosY() - OFFSET * 3));
+
         center = new Vector2(getPosX(), getPosY());
     }
 

@@ -25,9 +25,9 @@ public class Settings{
 
     public static final float ZOMBIE_MOVING_DELAY = 3f;
 
-    public static final int TREES_NUMBER = 3;
-    public static final int BUILDINGS_NUMBER = 3;
-    public static final int ZOMBIES_NUMBER = 3;
+    public static final int TREES_NUMBER = 15;
+    public static final int BUILDINGS_NUMBER = 15;
+    public static final int ZOMBIES_NUMBER = 5;
 
     public static final float WINDOW_WIDTH = 900;
     public static final float WINDOW_HEIGHT = 700;

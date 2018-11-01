@@ -57,10 +57,6 @@ public class Paths{
     public static final String DOUBLE_CLOTH_WOODCUT = "assets/animations/anim_woodcutter_double_cloth_woodcut/anim_woodcutter_double_cloth_woodcut.png";
     public static final String DOUBLE_CLOTH_WOODCUT_XML = "assets/animations/anim_woodcutter_double_cloth_woodcut/anim_woodcutter_double_cloth_woodcut.xml";
 
-    //zombie---------------------------------------------------------------------------------
-    public static final String WOODCUTTER_WAKEUP = "assets/animations/anim_woodcutter_wakeup/anim_woodcutter_wakeup.png";
-    public static final String WOODCUTTER_WAKEUP_XML = "assets/animations/anim_woodcutter_wakeup/anim_woodcutter_wakeup.xml";
-
     public static final String WOODCUTTER_STAND = "assets/animations/anim_woodcutter_stand/anim_woodcutter_stand.png";
     public static final String WOODCUTTER_STAND_XML = "assets/animations/anim_woodcutter_stand/anim_woodcutter_stand.xml";
     public static final String WOODCUTTER_WALK_DOWN = "assets/animations/anim_woodcutter_walk_down/anim_woodcutter_walk_down.png";

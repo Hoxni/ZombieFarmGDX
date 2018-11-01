@@ -38,8 +38,8 @@ public class Zombie extends SpecialSprite{
         mapObject = new MapObject();
         mapObject.getProperties().put("actor", zombieActor);
         layer = new MapLayer();
-        setLayerIndex();
         setCenter();
+        setLayerIndex();
     }
 
     public void update(){
@@ -221,7 +221,7 @@ public class Zombie extends SpecialSprite{
      */
     private void setLayerIndex(){
         //find closest obstruction
-        Obstruction obstruction = Collections.min(obstructions, Comparator.comparingDouble(c->location.y - c.getCenter().y));
+        Obstruction obstruction = Collections.min(obstructions, Comparator.comparingDouble(c->Math.abs(location.y - c.getCenter().y)));
         //if obstruction is located higher than zombie
         if(obstruction.getCenter().y <= location.y){
             layerIndex = obstruction.getLayer() + 1;

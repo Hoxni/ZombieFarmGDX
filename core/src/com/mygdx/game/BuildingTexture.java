@@ -6,9 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.*;
 
 public class BuildingTexture extends TextureMapObject implements Obstruction{
-    protected final float OFFSET = 25;
-    protected final float VERTICAL_OFFSET = 100;
-    protected final ArrayList<Vector2> cornerPoints;
+    protected final float OFFSET = 20;
+    protected final float VERTICAL_OFFSET_1 = 100;
+    protected final float VERTICAL_OFFSET_2 = 145;
+    protected final List<Vector2> cornerPoints;
     protected int layer = 0;
 
     public BuildingTexture(String building, String buildingXML, float x, float y){
@@ -21,10 +22,11 @@ public class BuildingTexture extends TextureMapObject implements Obstruction{
         float width = animation.getWidth();
         float height = animation.getHeight();
         cornerPoints = new ArrayList<>();
-        cornerPoints.add(new Vector2(getX() - OFFSET, getY() + 145));
+        cornerPoints.add(new Vector2(getX() - OFFSET, getY() + VERTICAL_OFFSET_2));
         cornerPoints.add(new Vector2(getX() + width / 2, getY() + height + OFFSET));
-        cornerPoints.add(new Vector2(getX() + width + OFFSET, getY() + 145));
-        cornerPoints.add(new Vector2(getX() + width / 2, getY() + VERTICAL_OFFSET - OFFSET));
+        cornerPoints.add(new Vector2(getX() + width + OFFSET, getY() + VERTICAL_OFFSET_2));
+        cornerPoints.add(new Vector2(getX() + width / 2, getY() + VERTICAL_OFFSET_1 - OFFSET));
+
     }
 
 
