@@ -8,7 +8,7 @@ import static com.badlogic.gdx.math.MathUtils.isEqual;
 
 public interface Obstruction{
 
-    float EPS = -1f;
+    float EPS = 1f;
 
     static Vector2 getIntersectionPoint(Vector2 l1p1, Vector2 l1p2, Vector2 l2p1, Vector2 l2p2){
         float A1 = l1p2.y - l1p1.y;
