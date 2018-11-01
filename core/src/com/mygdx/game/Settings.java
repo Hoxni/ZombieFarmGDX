@@ -10,8 +10,8 @@ public class Settings{
     public static final float SPRITE_MAX_FORCE = 1f;//0.1
 
     //using value*value (value^2) because distance between vectors
-    //calculated with Vector2.len2()" (read on the official site about it)
-    //formula: len2=(x^2 + y^2) instead of len=(x^2 + y^2)^0.5
+    //calculated with Vector2.dst2() (use link)
+    //https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/math/Vector2.html#dst2-com.badlogic.gdx.math.Vector2-
     public static final float SPRITE_SLOW_DOWN_DISTANCE = 10*10f;//30
     public static final float STOP_DISTANCE = 10*10f;
 
