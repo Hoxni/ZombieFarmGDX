@@ -11,14 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreeTexture extends TextureMapObject implements Obstruction{
+
     protected final float OFFSET = 12;
+
     protected final SpecialAnimation stumpView;
-    protected boolean isCutDown = false;
     protected final List<Vector2> cornerPoints;
     protected final TreeTexture thisTree;
-    protected final float WIDTH, HEIGHT;
-    protected int layer = 0;
     protected final Vector2 center;
+
+    protected boolean isCutDown = false;
+
+    protected final float
+            WIDTH,
+            HEIGHT;
+
+    protected int layer = 0;
+
 
     public TreeTexture(
             String palm,

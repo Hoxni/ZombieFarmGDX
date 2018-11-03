@@ -15,14 +15,21 @@ import java.util.List;
  */
 
 public class OrthoCamController extends Stage {
+
     private final OrthographicCamera camera;
+
     private final Vector3 curr = new Vector3();
     private final Vector3 last = new Vector3(-1, -1, -1);
+
     private final int mapHeight;
     private final int mapWidth;
+
     private final Zombie zombie;
+
     private final List<TreeTexture> trees;
+
     private final GamingZone gamingZone;
+
 
     public OrthoCamController (OrthographicCamera camera, int mapHeight, int mapWidth, Zombie zombie, List<TreeTexture> trees, GamingZone gamingZone) {
         this.camera = camera;

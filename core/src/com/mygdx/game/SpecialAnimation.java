@@ -14,14 +14,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
 public class SpecialAnimation{
+
     protected final Animation<TextureRegion> animation;
-    protected float width = 267;
-    protected float height = 200;
+
+    protected final float WIDTH;
+    protected final float HEIGHT;
+
 
     public SpecialAnimation(String imagePath, String xmlPath){
         animation = getAnimationStages(imagePath, xmlPath);
-        setWidth(animation.getKeyFrames()[0].getRegionWidth());
-        setHeight(animation.getKeyFrames()[0].getRegionHeight());
+        WIDTH = animation.getKeyFrames()[0].getRegionWidth();
+        HEIGHT = animation.getKeyFrames()[0].getRegionHeight();
     }
     protected Animation<TextureRegion> getAnimationStages(String imagePath, String xmlPath){
         TextureRegion[] animation = null;
@@ -63,18 +66,10 @@ public class SpecialAnimation{
     }
 
     public float getWidth(){
-        return width;
+        return WIDTH;
     }
 
     public float getHeight(){
-        return height;
-    }
-
-    public void setWidth(float width){
-        this.width = width;
-    }
-
-    public void setHeight(float height){
-        this.height = height;
+        return HEIGHT;
     }
 }

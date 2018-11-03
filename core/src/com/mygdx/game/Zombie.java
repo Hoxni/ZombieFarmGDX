@@ -7,23 +7,33 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.*;
 
 public class Zombie extends SpecialSprite{
-    protected Vector2 currentTargetPoint;
-    protected Vector2 target;
+
     protected final WhiteWave whiteWave;
     protected final ZombieActor zombieActor;
+
+    protected Vector2 currentTargetPoint;
+    protected Vector2 target;
+
     protected TreeTexture treeTarget;
-    protected boolean whiteWaveDisplayed = false;
-    protected boolean cutDown = false; //"true" when zombie is going to cut down a tree
+
+    protected boolean isCreatingPath = false; //"true" when path from location to target is creating with "follow()"
     protected boolean hasTimber = false; //"true" when zombie carries a timber
+    protected boolean cutDown = false; //"true" when zombie is going to cut down a tree
     protected boolean returnToStart = false; //"true" when zombie returns to initial point
     protected boolean goDown = true; //"true" when zombie goes from top to bottom of frame
-    protected final List<Vector2> points;
+
     protected final List<Obstruction> obstructions;
+    protected final List<Vector2> points;
     protected final Deque<AbstractMap.SimpleEntry<Float, Integer>> layers; //layers of obstructions
+
     protected int pointIndex = 0; //index of current target point
     protected int layerIndex = 0; //index of current layerIndex
+
     protected MapLayer layer;
+
     protected final MapObject mapObject;
+
+
 
     public Zombie(Vector2 location, ZombieActor actor, WhiteWave point, List<Obstruction> obstructions){
         super(location);
@@ -43,6 +53,9 @@ public class Zombie extends SpecialSprite{
     }
 
     public void update(){
+
+        //prohibits update if path isn't created
+        if(isCreatingPath) return;
 
         //prohibits to change location while zombie carry a timber to initial point
         if(returnToStart){
@@ -97,20 +110,20 @@ public class Zombie extends SpecialSprite{
         super.update(currentTargetPoint);
     }
 
-    public void stop(){
+    private void stop(){
         pointIndex++;
         if(pointIndex < points.size()){
             currentTargetPoint = points.get(pointIndex);
         } else {
             whiteWave.stop();
-            whiteWaveDisplayed = false;
         }
         //if zombie will cut down a tree, cut-animation will play instead of stay-animation
         //zombie can cut down a tree if stands on special point (cutPosition) near this tree
         if(cutDown && location.dst2(treeTarget.getCutPosition()) < Settings.STOP_DISTANCE){
             zombieActor.setFlip(true);
             treeTarget.chopDown(this);
-        } else if(!whiteWaveDisplayed){//prohibits stand-animation if zombie is going to the target point
+        } else {
+            //if zombie is on target point
             zombieActor.setZombieMode(ZombieActor.STAND);
         }
     }
@@ -149,11 +162,16 @@ public class Zombie extends SpecialSprite{
     /**
      * create path to the target point
      */
-    void follow(Vector2 target){
+    public void follow(Vector2 target){
+        //start creating a path
+        isCreatingPath = true;
+
         if(returnToStart) target = Settings.INITIAL_POINT.cpy();
+
         pointIndex = 0;
         points.clear();
         layers.clear();
+
         List<List<Vector2>> paths = new ArrayList<>();
         List<AbstractMap.SimpleEntry<Float, Integer>> layersList = new ArrayList<>();
 
@@ -200,7 +218,9 @@ public class Zombie extends SpecialSprite{
 
         currentTargetPoint = points.get(pointIndex);
         whiteWave.start(target.x, target.y);
-        whiteWaveDisplayed = true;
+
+        //path is created
+        isCreatingPath = false;
     }
 
     public ZombieActor getActor(){
@@ -247,7 +267,7 @@ public class Zombie extends SpecialSprite{
     }
 
     @Override
-    void display(){
+    protected void display(){
         zombieActor.setPosition(location.x - centerX, location.y - centerY);
     }
 }

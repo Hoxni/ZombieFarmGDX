@@ -14,6 +14,7 @@ import java.util.List;
 public class CustomOrthogonalTiledMapRenderer extends OrthogonalTiledMapRenderer{
     private final List<Zombie> zombies;
 
+
     public CustomOrthogonalTiledMapRenderer(TiledMap map){
         super(map);
         //list of all zombies on map

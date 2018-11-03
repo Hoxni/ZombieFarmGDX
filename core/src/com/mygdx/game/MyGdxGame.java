@@ -28,6 +28,7 @@ import java.util.Random;
 
 
 public class MyGdxGame extends ApplicationAdapter{
+
     protected TiledMap map;
     protected TiledMapRenderer renderer;
     protected GamingZone gamingZone;

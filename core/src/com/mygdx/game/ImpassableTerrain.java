@@ -13,6 +13,7 @@ import java.util.*;
 public class ImpassableTerrain implements Obstruction{
     protected final List<Vector2> cornerPoints;
 
+
     public ImpassableTerrain(List<Vector2> cornerPoints){
         this.cornerPoints = cornerPoints;
     }

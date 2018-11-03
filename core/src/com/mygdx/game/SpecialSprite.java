@@ -4,15 +4,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class SpecialSprite{
 
-    final Vector2 location;
-    final Vector2 velocity;
-    final Vector2 acceleration;
+    protected final Vector2 location;
+    protected final Vector2 velocity;
+    protected final Vector2 acceleration;
 
-    final float maxForce = Settings.SPRITE_MAX_FORCE;
-    final float maxSpeed = Settings.SPRITE_MAX_SPEED;
+    protected final float maxForce = Settings.SPRITE_MAX_FORCE;
+    protected final float maxSpeed = Settings.SPRITE_MAX_SPEED;
 
-    float centerX;
-    float centerY;
+    protected float centerX;
+    protected float centerY;
 
 
     public SpecialSprite(Vector2 location) {
@@ -22,11 +22,11 @@ public abstract class SpecialSprite{
         this.acceleration = new Vector2(0, 0);
     }
 
-    public void applyForce(Vector2 force) {
+    protected void applyForce(Vector2 force) {
         acceleration.add(force);
     }
 
-    public void move(){
+    protected void move(){
 
         // set velocity depending on acceleration
         velocity.add(acceleration);
@@ -48,7 +48,7 @@ public abstract class SpecialSprite{
     /**
      * Move sprite towards target
      */
-    public void seek(Vector2 target) {
+    protected void seek(Vector2 target) {
 
         //Vector2.subtract(target, location);
         Vector2 desired = target.cpy();
@@ -84,7 +84,7 @@ public abstract class SpecialSprite{
     /**
      * Update node position
      */
-    abstract void display();
+    protected abstract void display();
 
     public Vector2 getLocation() {
         return location;

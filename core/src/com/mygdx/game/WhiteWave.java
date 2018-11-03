@@ -5,10 +5,17 @@ import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.utils.Timer;
 
 public class WhiteWave extends TextureMapObject{
+
     protected final SpecialAnimation point;
-    protected float posX, posY;
-    protected final float WIDTH, HEIGHT;
+
+    protected float
+            posX,
+            posY;
+    protected final float
+            WIDTH,
+            HEIGHT;
     protected int stage;
+
 
     public WhiteWave(){
         point = new SpecialAnimation(Paths.WHITE_WAVE, Paths.WHITE_WAVE_XML);

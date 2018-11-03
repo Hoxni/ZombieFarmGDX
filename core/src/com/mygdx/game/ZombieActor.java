@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class ZombieActor extends Actor{
-    static final int
+
+    public static final int
             ZOMBIE_STAGES = 6,
             STAND = 0,
             WALK_DOWN = 1,
@@ -15,16 +16,19 @@ public class ZombieActor extends Actor{
             WOODCUT = 5;
 
     protected int mode = 0;
-    protected boolean flip = true;
     protected float duration = 0;
+    protected boolean flip = true;
+
 
     protected SpecialAnimation[] zombieAnimations;
     protected SpecialAnimation zombie;
+
     protected Hat hat;
     protected Cloth cloth;
     protected boolean
             hasHat,
             hasCloth;
+
 
     public ZombieActor(){
         createZombieAnimations();

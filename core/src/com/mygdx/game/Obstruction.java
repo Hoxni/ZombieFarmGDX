@@ -152,6 +152,29 @@ public interface Obstruction{
         return inside;
     }
 
+
+    /**
+
+    obstruction is represented as a rhombus
+    it has 4 corner points and 4 edges
+
+    designation:
+        |image - image of obstruction
+        |0, 1, 2, 3 - indexes of points
+        |0e, 1e, 2e, 3e - indexes of edges
+
+             scheme
+
+              + 3 +
+      3e->  +       +  <-2e
+          +           +
+         0    image    2
+          +           +
+      0e->  +       +   <-1e
+              + 1 +
+
+
+     */
     //can be optimized rewriting "getIntersectionPoints" in "Obstruction" interface
     //for example "getIntersectionPoints" can return intersected edges
     //or replace "getIntersectionPoints" with "isIntersected" method
@@ -203,57 +226,64 @@ public interface Obstruction{
             intersectionPoints.add(o.getKey());
         }
 
-        Vector2 firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(location::dst2)); //c -> Vector2.subtract(location, c).len2()
-        Vector2 secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(target::dst2)); //c -> Vector2.subtract(target, c).len2()
-
         //points of bypass
         List<Vector2> path = new ArrayList<>();
-        path.add(firstIntersection);
 
-        //if line intersects two adjacent edges
-        if(Math.abs((intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 2) == 1){
-            int min = Math.min(intersectedEdges.first().getValue(), intersectedEdges.last().getValue());
-            int index = Math.abs(intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 3 + min;
-            path.add(getCornerPoints().get(index));
+        try{
+            Vector2 firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(location::dst2)); //c -> Vector2.subtract(location, c).len2()
+            Vector2 secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(target::dst2)); //c -> Vector2.subtract(target, c).len2()
+
+            path.add(firstIntersection);
+
+            //if line intersects two adjacent edges
+            if(Math.abs((intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 2) == 1){
+                int min = Math.min(intersectedEdges.first().getValue(), intersectedEdges.last().getValue());
+                int index = Math.abs(intersectedEdges.first().getValue() - intersectedEdges.last().getValue()) % 3 + min;
+                path.add(getCornerPoints().get(index));
+                path.add(secondIntersection);
+                return path;
+            }
+
+            //if line intersects two opposite edges
+            //find second bypass point
+            Vector2 closestToSecond = Collections.min(getCornerPoints(), Comparator.comparingDouble(secondIntersection::dst2)); //c -> Vector2.subtract(secondIntersection, c).len2()
+            //first intersected edge
+            int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> firstIntersection.dst2(c.getKey()))).getValue(); //c -> Vector2.subtract(firstIntersection, c.getValue()).len2())).getKey()
+            int c = getCornerPoints().indexOf(closestToSecond); //index of closest corner-point for secondIntersection-point
+            int index = -1;
+
+            //some hard-to-explain checks to find first bypass point
+            switch(c){
+                case 0:
+                    if(a == 1) index = 1;
+                    else index = 3;
+                    break;
+                case 1:
+                    if(a == 2) index = 2;
+                    else index = 0;
+                    break;
+                case 2:
+                    if(a == 0) index = 1;
+                    else index = 3;
+                    break;
+                case 3:
+                    if(a == 0) index = 0;
+                    else index = 2;
+                    break;
+            }
+
+            //get first bypass point
+            Vector2 p = getCornerPoints().get(index);
+            //yes, second bypass point is calculating earlier than first
+
+            path.add(p);
+            path.add(closestToSecond);
             path.add(secondIntersection);
-            return path;
+
+        }catch(NoSuchElementException e){
+            //predict stupid bugs
+            path.add(location);
         }
-
-        //if line intersects two opposite edges
-        //find second bypass point
-        Vector2 closestToSecond = Collections.min(getCornerPoints(), Comparator.comparingDouble(secondIntersection::dst2)); //c -> Vector2.subtract(secondIntersection, c).len2()
-        //first intersected edge
-        int a = Collections.min(intersectedEdges, Comparator.comparingDouble(c -> firstIntersection.dst2(c.getKey()))).getValue(); //c -> Vector2.subtract(firstIntersection, c.getValue()).len2())).getKey()
-        int c = getCornerPoints().indexOf(closestToSecond); //index of closest corner-point for secondIntersection-point
-        int index = -1;
-
-        //some hard-to-explain checks to find first bypass point
-        switch(c){
-            case 0:
-                if(a == 1) index = 1;
-                else index = 3;
-                break;
-            case 1:
-                if(a == 2) index = 2;
-                else index = 0;
-                break;
-            case 2:
-                if(a == 0) index = 1;
-                else index = 3;
-                break;
-            case 3:
-                if(a == 0) index = 0;
-                else index = 2;
-                break;
-        }
-
-        //get first bypass point
-        Vector2 p = getCornerPoints().get(index);
-        //yes, second bypass point is calculating earlier than first
-
-        path.add(p);
-        path.add(closestToSecond);
-        path.add(secondIntersection);
 
         return path;
     }

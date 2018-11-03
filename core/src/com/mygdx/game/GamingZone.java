@@ -10,6 +10,7 @@ import java.util.*;
 public class GamingZone{
     protected final List<Vector2> cornerPoints;
 
+
     public GamingZone(List<Vector2> cornerPoints){
         this.cornerPoints = cornerPoints;
     }

@@ -1,9 +1,9 @@
 package com.mygdx.game;
 
-abstract class Clothes{
-    protected final int
-            NUMBER_OF_MODES = 6;
+public abstract class Clothes{
+
     protected final SpecialAnimation[] modes;
+
 
     public Clothes(
             String stand,
@@ -18,13 +18,13 @@ abstract class Clothes{
             String woodUpXML,
             String woodCut,
             String woodCutXML){
-        modes = new SpecialAnimation[NUMBER_OF_MODES];
-        modes[0] = new SpecialAnimation(stand, standXML);
-        modes[1] = new SpecialAnimation(down, downXML);
-        modes[2] = new SpecialAnimation(up, upXML);
-        modes[3] = new SpecialAnimation(woodDown, woodDownXML);
-        modes[4] = new SpecialAnimation(woodUp, woodUpXML);
-        modes[5] = new SpecialAnimation(woodCut, woodCutXML);
+        modes = new SpecialAnimation[ZombieActor.ZOMBIE_STAGES];
+        modes[ZombieActor.STAND] = new SpecialAnimation(stand, standXML);
+        modes[ZombieActor.WALK_DOWN] = new SpecialAnimation(down, downXML);
+        modes[ZombieActor.WALK_UP] = new SpecialAnimation(up, upXML);
+        modes[ZombieActor.WALKWOOD_DOWN] = new SpecialAnimation(woodDown, woodDownXML);
+        modes[ZombieActor.WALKWOOD_UP] = new SpecialAnimation(woodUp, woodUpXML);
+        modes[ZombieActor.WOODCUT] = new SpecialAnimation(woodCut, woodCutXML);
     }
 
     public SpecialAnimation getHatMode(int i){
