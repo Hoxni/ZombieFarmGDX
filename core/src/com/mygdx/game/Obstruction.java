@@ -297,7 +297,7 @@ public interface Obstruction{
         }catch(NoSuchElementException e){
             //predict stupid bugs
             target.set(location);
-            return null;
+            return Collections.singletonList(location);
         }
     }
 
