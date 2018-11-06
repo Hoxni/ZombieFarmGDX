@@ -194,54 +194,54 @@ public interface Obstruction{
     //for example "getIntersectionPoints" can return intersected edges
     //or replace "getIntersectionPoints" with "isIntersected" method
     default List<Vector2> getBypass(Vector2 location, Vector2 target){
-        
+
         //used to predict stupid bugs
         try{
-        //if target-point is situated inside of building
-        if(Obstruction.isPointInPolygon(target, getCornerPoints())){
-            List<Vector2> points = Obstruction.getLineIntersections(location, target, getCornerPoints());
+            //if target-point is situated inside of building
+            if(Obstruction.isPointInPolygon(target, getCornerPoints())){
+                List<Vector2> points = Obstruction.getLineIntersections(location, target, getCornerPoints());
 
                 //set target as closest to location intersection point
                 target.set(Collections.min(points, Comparator.comparingDouble(location::dst2))); //o -> Vector2.subtract(location, o).len2()
 
-            //return list of one element
-            return Collections.singletonList(target);
-        }
-
-        //return null if zombie has not to bypass this obstruction
-        if(!Obstruction.isPolygonIntersected(location, target, getCornerPoints()) && !Obstruction.isPointInPolygon(location, getCornerPoints())){
-            return null;
-        }
-
-        //set of intersection points and edges that contain these points
-        TreeSet<Map.Entry<Vector2, Integer>> intersectedEdges = new TreeSet<>((o1, o2) -> {
-            if(o1.getKey().epsilonEquals(o2.getKey(), EPS))
-                return 0;
-            else return 1;
-        });
-
-
-        //if it doesn't need to fix stupid bugs
-        //find edges which have intersection with path-line
-        //this code duplicates "getIntersectionPoints" and can be optimized as described above
-        for(int i = 0; i < getCornerPoints().size(); i++){
-            int next = (i + 1 == getCornerPoints().size()) ? 0 : i + 1;
-
-            Vector2 ip = Obstruction.getLineIntersection(location, target, getCornerPoints().get(i), getCornerPoints().get(next));
-
-            if(ip != null){
-                intersectedEdges.add(new AbstractMap.SimpleEntry<>(ip, i));
+                //return list of one element
+                return Collections.singletonList(target);
             }
-        }
 
-        //adds correct intersection points
-        List<Vector2> intersectionPoints = new ArrayList<>();
-        for(Map.Entry<Vector2, Integer> o : intersectedEdges){
-            intersectionPoints.add(o.getKey());
-        }
+            //return null if zombie has not to bypass this obstruction
+            if(!Obstruction.isPolygonIntersected(location, target, getCornerPoints()) && !Obstruction.isPointInPolygon(location, getCornerPoints())){
+                return null;
+            }
 
-        //points of bypass
-        List<Vector2> path = new ArrayList<>();
+            //set of intersection points and edges that contain these points
+            TreeSet<Map.Entry<Vector2, Integer>> intersectedEdges = new TreeSet<>((o1, o2) -> {
+                if(o1.getKey().epsilonEquals(o2.getKey(), EPS))
+                    return 0;
+                else return 1;
+            });
+
+
+            //if it doesn't need to fix stupid bugs
+            //find edges which have intersection with path-line
+            //this code duplicates "getIntersectionPoints" and can be optimized as described above
+            for(int i = 0; i < getCornerPoints().size(); i++){
+                int next = (i + 1 == getCornerPoints().size()) ? 0 : i + 1;
+
+                Vector2 ip = Obstruction.getLineIntersection(location, target, getCornerPoints().get(i), getCornerPoints().get(next));
+
+                if(ip != null){
+                    intersectedEdges.add(new AbstractMap.SimpleEntry<>(ip, i));
+                }
+            }
+
+            //adds correct intersection points
+            List<Vector2> intersectionPoints = new ArrayList<>();
+            for(Map.Entry<Vector2, Integer> o : intersectedEdges){
+                intersectionPoints.add(o.getKey());
+            }
+
+            //points of bypass
+            List<Vector2> path = new ArrayList<>();
 
             Vector2 firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(location::dst2)); //c -> Vector2.subtract(location, c).len2()
             Vector2 secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(target::dst2)); //c -> Vector2.subtract(target, c).len2()

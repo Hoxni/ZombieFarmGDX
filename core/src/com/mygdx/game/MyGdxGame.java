@@ -237,7 +237,7 @@ public class MyGdxGame extends ApplicationAdapter{
             ((CustomOrthogonalTiledMapRenderer)renderer).addZombie(zombie);
         }
 
-        //change target for mobs every (Setting.ZOMBIE_MOVING_DELAY) seconds
+        //change target for mobs every (Setting.ZOMBIE_MOB_MOVING_DELAY) seconds
         Random random = new Random();
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task(){
@@ -257,7 +257,7 @@ public class MyGdxGame extends ApplicationAdapter{
                     }
                 }
             }
-        }, 0, Settings.ZOMBIE_MOVING_DELAY);
+        }, 0, Settings.ZOMBIE_MOB_MOVING_DELAY);
         timer.start();
     }
 

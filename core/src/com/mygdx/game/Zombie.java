@@ -8,6 +8,8 @@ import java.util.*;
 
 public class Zombie extends SpecialSprite{
 
+    private static final float HEIGHT_OFFSET = 7f;
+
     protected final WhiteWave whiteWave;
     protected final ZombieActor zombieActor;
 
@@ -263,7 +265,7 @@ public class Zombie extends SpecialSprite{
      */
     private void setCenter(){
         this.centerX = zombieActor.getWidth() / 2;
-        this.centerY = zombieActor.getHeight() / 2 + Settings.HEIGHT_OFFSET;
+        this.centerY = zombieActor.getHeight() / 2 + HEIGHT_OFFSET;
     }
 
     @Override
