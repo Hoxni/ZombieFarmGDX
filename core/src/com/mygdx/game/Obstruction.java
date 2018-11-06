@@ -194,7 +194,8 @@ public interface Obstruction{
     //for example "getIntersectionPoints" can return intersected edges
     //or replace "getIntersectionPoints" with "isIntersected" method
     default List<Vector2> getBypass(Vector2 location, Vector2 target){
-
+        
+        //used to predict stupid bugs
         try{
         //if target-point is situated inside of building
         if(Obstruction.isPointInPolygon(target, getCornerPoints())){
