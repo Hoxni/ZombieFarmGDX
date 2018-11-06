@@ -43,7 +43,7 @@ public interface Obstruction{
         return null; //intersection is at out of at least one segment.
     }
 
-    //intersection of line (not segments) and segments
+    //intersection of line (not segments) and segment
     static Vector2 getLineIntersection(Vector2 l1p1, Vector2 l1p2, Vector2 l2p1, Vector2 l2p2){
         float A1 = l1p2.y - l1p1.y;
         float B1 = l1p1.x - l1p2.x;
@@ -73,7 +73,7 @@ public interface Obstruction{
         return null; //intersection is at out of at least one segment.
     }
 
-    static List<Vector2> getIntersectionPoints(Vector2 l1p1, Vector2 l1p2, List<Vector2> poly){
+    static List<Vector2> getIntersectionPoints(Vector2 p1, Vector2 p2, List<Vector2> poly){
         //if line intersects polygon in corner point, function adds this point twice,
         //because two edges of polygon contain this point
 
@@ -89,7 +89,7 @@ public interface Obstruction{
 
             int next = (i + 1 == poly.size()) ? 0 : i + 1;
 
-            Vector2 ip = getIntersectionPoint(l1p1, l1p2, poly.get(i), poly.get(next));
+            Vector2 ip = getIntersectionPoint(p1, p2, poly.get(i), poly.get(next));
 
             if(ip != null) intersectionPoints.add(ip);
 
@@ -99,7 +99,7 @@ public interface Obstruction{
     }
 
     //intersections of line (not segment) and polygon (consist of segments)
-    static List<Vector2> getLineIntersections(Vector2 l1p1, Vector2 l1p2, List<Vector2> poly){
+    static List<Vector2> getLineIntersections(Vector2 p1, Vector2 p2, List<Vector2> poly){
         //if line intersects polygon in corner point, function adds this point twice,
         //because two edges of polygon contain this point
 
@@ -115,7 +115,7 @@ public interface Obstruction{
 
             int next = (i + 1 == poly.size()) ? 0 : i + 1;
 
-            Vector2 ip = getLineIntersection(l1p1, l1p2, poly.get(i), poly.get(next));
+            Vector2 ip = getLineIntersection(p1, p2, poly.get(i), poly.get(next));
 
             if(ip != null) intersectionPoints.add(ip);
 
@@ -152,6 +152,21 @@ public interface Obstruction{
         return inside;
     }
 
+    //"true" if segment intersects polygon
+    static boolean isPolygonIntersected(Vector2 p1, Vector2 p2, List<Vector2> poly){
+
+        for(int i = 0; i < poly.size(); i++){
+
+            int next = (i + 1 == poly.size()) ? 0 : i + 1;
+
+            Vector2 ip = getIntersectionPoint(p1, p2, poly.get(i), poly.get(next));
+
+            if(ip != null) return true;
+
+        }
+
+        return false;
+    }
 
     /**
 
@@ -180,22 +195,20 @@ public interface Obstruction{
     //or replace "getIntersectionPoints" with "isIntersected" method
     default List<Vector2> getBypass(Vector2 location, Vector2 target){
 
+        try{
         //if target-point is situated inside of building
         if(Obstruction.isPointInPolygon(target, getCornerPoints())){
             List<Vector2> points = Obstruction.getLineIntersections(location, target, getCornerPoints());
 
-            //set target as closest to location intersection point
-            target.set(Collections.min(points, Comparator.comparingDouble(location::dst2))); //o -> Vector2.subtract(location, o).len2()
+                //set target as closest to location intersection point
+                target.set(Collections.min(points, Comparator.comparingDouble(location::dst2))); //o -> Vector2.subtract(location, o).len2()
 
             //return list of one element
             return Collections.singletonList(target);
         }
 
-        //get intersection points
-        List<Vector2> intersectionPoints = Obstruction.getIntersectionPoints(location, target, getCornerPoints());
-
         //return null if zombie has not to bypass this obstruction
-        if(intersectionPoints.isEmpty() && !Obstruction.isPointInPolygon(location, getCornerPoints())){
+        if(!Obstruction.isPolygonIntersected(location, target, getCornerPoints()) && !Obstruction.isPointInPolygon(location, getCornerPoints())){
             return null;
         }
 
@@ -221,7 +234,7 @@ public interface Obstruction{
         }
 
         //adds correct intersection points
-        intersectionPoints.clear();
+        List<Vector2> intersectionPoints = new ArrayList<>();
         for(Map.Entry<Vector2, Integer> o : intersectedEdges){
             intersectionPoints.add(o.getKey());
         }
@@ -229,7 +242,6 @@ public interface Obstruction{
         //points of bypass
         List<Vector2> path = new ArrayList<>();
 
-        try{
             Vector2 firstIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(location::dst2)); //c -> Vector2.subtract(location, c).len2()
             Vector2 secondIntersection = Collections.min(intersectionPoints, Comparator.comparingDouble(target::dst2)); //c -> Vector2.subtract(target, c).len2()
 
@@ -280,12 +292,13 @@ public interface Obstruction{
             path.add(closestToSecond);
             path.add(secondIntersection);
 
+            return path;
+
         }catch(NoSuchElementException e){
             //predict stupid bugs
-            path.add(location);
+            target.set(location);
+            return null;
         }
-
-        return path;
     }
 
     List<Vector2> getCornerPoints();
