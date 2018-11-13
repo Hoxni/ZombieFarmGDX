@@ -27,7 +27,7 @@ public class Settings{
 
     public static final int TREES_NUMBER = 7;
     public static final int BUILDINGS_NUMBER = 7;
-    public static final int ZOMBIES_NUMBER = 55;
+    public static final int ZOMBIES_NUMBER = 5;
 
     public static final float WINDOW_WIDTH = 900;
     public static final float WINDOW_HEIGHT = 700;
