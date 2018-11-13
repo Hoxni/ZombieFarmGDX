@@ -17,9 +17,14 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
+import com.mygdx.game.clothes.Cloth;
+import com.mygdx.game.clothes.Hat;
+import com.mygdx.game.mapobjects.*;
 import com.mygdx.game.parser.ConfigurationParser;
 import com.mygdx.game.parser.TileHolder;
 import com.mygdx.game.parser.TileMapHolder;
+import com.mygdx.game.zombie.Zombie;
+import com.mygdx.game.zombie.ZombieActor;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -280,8 +285,8 @@ public class MyGdxGame extends ApplicationAdapter{
 
     /**
      * set impassable terrain
-     * set layers for all obstructions depending on the location
-     * ascending from top to bottom (first layerIndex = 1, last = number of obstructions - 1)
+     * set layers for all mapobjects depending on the location
+     * ascending from top to bottom (first layerIndex = 1, last = number of mapobjects - 1)
      * zero layer used to display zombie behind the topmost building
      */
     public void setObstructions(){

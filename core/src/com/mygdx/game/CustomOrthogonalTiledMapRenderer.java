@@ -7,6 +7,8 @@ import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.mygdx.game.zombie.Zombie;
+import com.mygdx.game.zombie.ZombieActor;
 
 import java.util.ArrayList;
 import java.util.List;
